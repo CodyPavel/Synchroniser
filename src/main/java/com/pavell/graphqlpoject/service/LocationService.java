@@ -26,7 +26,7 @@ public class LocationService {
         locationRepo.saveAll(locations);
     }
 
-    public void parse(){
-
+    public Long getMaxId() {
+        return locationRepo.getMaxId();
     }
 }
