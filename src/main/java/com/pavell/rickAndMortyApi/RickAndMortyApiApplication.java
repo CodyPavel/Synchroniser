@@ -67,7 +67,6 @@ public class RickAndMortyApiApplication {
 
                 }
             });
-          int intForTest = 0;
         };
     }
 
