@@ -2,51 +2,45 @@
 package com.pavell.graphqlpoject.model.episode;
 
 import javax.annotation.Generated;
-import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class Info {
 
-    @SerializedName("count")
-    private Long mCount;
-    @SerializedName("next")
-    private String mNext;
-    @SerializedName("pages")
-    private Long mPages;
-    @SerializedName("prev")
-    private Object mPrev;
+    private Long count;
+    private String next;
+    private Long pages;
+    private String prev;
 
     public Long getCount() {
-        return mCount;
+        return count;
     }
 
     public void setCount(Long count) {
-        mCount = count;
+        this.count = count;
     }
 
     public String getNext() {
-        return mNext;
+        return next;
     }
 
     public void setNext(String next) {
-        mNext = next;
+        this.next = next;
     }
 
     public Long getPages() {
-        return mPages;
+        return pages;
     }
 
     public void setPages(Long pages) {
-        mPages = pages;
+        this.pages = pages;
     }
 
-    public Object getPrev() {
-        return mPrev;
+    public String getPrev() {
+        return prev;
     }
 
-    public void setPrev(Object prev) {
-        mPrev = prev;
+    public void setPrev(String prev) {
+        this.prev = prev;
     }
-
 }

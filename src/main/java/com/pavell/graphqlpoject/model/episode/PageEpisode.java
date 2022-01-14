@@ -3,31 +3,27 @@ package com.pavell.graphqlpoject.model.episode;
 
 import java.util.List;
 import javax.annotation.Generated;
-import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class PageEpisode {
 
-    @SerializedName("info")
-    private Info mInfo;
-    @SerializedName("results")
-    private List<Result> mResults;
+    private Info info;
+    private List<Result> results;
 
     public Info getInfo() {
-        return mInfo;
+        return info;
     }
 
     public void setInfo(Info info) {
-        mInfo = info;
+        this.info = info;
     }
 
     public List<Result> getResults() {
-        return mResults;
+        return results;
     }
 
     public void setResults(List<Result> results) {
-        mResults = results;
+        this.results = results;
     }
-
 }

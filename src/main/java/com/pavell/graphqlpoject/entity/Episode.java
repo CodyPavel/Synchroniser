@@ -17,17 +17,11 @@ public class Episode {
     int id;
 
     private String air_date;
-
     @ElementCollection
-//    @Convert(converter = ListToStringConverter.class)
     private List<String> characters;
-
     private String created;
-
     private String episode;
-
     private String name;
-
     private String url;
 
 }

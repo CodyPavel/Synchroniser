@@ -3,81 +3,72 @@ package com.pavell.graphqlpoject.model.episode;
 
 import java.util.List;
 import javax.annotation.Generated;
-import com.google.gson.annotations.SerializedName;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class Result {
 
-    @SerializedName("air_date")
-    private String mAirDate;
-    @SerializedName("characters")
-    private List<String> mCharacters;
-    @SerializedName("created")
-    private String mCreated;
-    @SerializedName("episode")
-    private String mEpisode;
-    @SerializedName("id")
-    private Long mId;
-    @SerializedName("name")
-    private String mName;
-    @SerializedName("url")
-    private String mUrl;
+    private String air_date;
+    private List<String> characters;
+    private String created;
+    private String episode;
+    private Long id;
+    private String name;
+    private String url;
 
-    public String getAirDate() {
-        return mAirDate;
+    public String getAir_date() {
+        return air_date;
     }
 
-    public void setAirDate(String airDate) {
-        mAirDate = airDate;
+    public void setAir_date(String air_date) {
+        this.air_date = air_date;
     }
 
     public List<String> getCharacters() {
-        return mCharacters;
+        return characters;
     }
 
     public void setCharacters(List<String> characters) {
-        mCharacters = characters;
+        this.characters = characters;
     }
 
     public String getCreated() {
-        return mCreated;
+        return created;
     }
 
     public void setCreated(String created) {
-        mCreated = created;
+        this.created = created;
     }
 
     public String getEpisode() {
-        return mEpisode;
+        return episode;
     }
 
     public void setEpisode(String episode) {
-        mEpisode = episode;
+        this.episode = episode;
     }
 
     public Long getId() {
-        return mId;
+        return id;
     }
 
     public void setId(Long id) {
-        mId = id;
+        this.id = id;
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(String name) {
-        mName = name;
+        this.name = name;
     }
 
     public String getUrl() {
-        return mUrl;
+        return url;
     }
 
     public void setUrl(String url) {
-        mUrl = url;
+        this.url = url;
     }
-
 }
