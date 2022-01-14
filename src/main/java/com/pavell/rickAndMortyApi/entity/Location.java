@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Location {
     private String created;
     private String dimension;
     private String name;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> residents;
     private String type;
     private String url;

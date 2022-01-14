@@ -55,7 +55,7 @@ public class RickAndMortyApiApplication {
             urls.forEach((resourcesName, url) -> {
                 switch (resourcesName) {
                     case "characters":
-                        pageAndSaveCharacters(locationService, characterService, restTemplate, urls.get(resourcesName));
+                        parseAndSaveCharacters(locationService, characterService, restTemplate, urls.get(resourcesName));
                         break;
                     case "locations":
                         parseAndSaveLocations(locationService, restTemplate, urls.get(resourcesName));
@@ -67,11 +67,11 @@ public class RickAndMortyApiApplication {
 
                 }
             });
-
+          int intForTest = 0;
         };
     }
 
-    private void pageAndSaveCharacters(LocationService locationService, CharacterService characterService, RestTemplate restTemplate, String url) {
+    private void parseAndSaveCharacters(LocationService locationService, CharacterService characterService, RestTemplate restTemplate, String url) {
         PageCharacter pageCharacter = restTemplate.getForObject(url, PageCharacter.class);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
@@ -84,7 +84,6 @@ public class RickAndMortyApiApplication {
             }
         }
 
-        ArrayList<Character> characters = new ArrayList<Character>();
         pageCharacterList.forEach(pageCharacterElement -> {
             List<com.pavell.rickAndMortyApi.model.character.Result> results = pageCharacterElement.getResults();
             results.forEach(result -> {

@@ -14,10 +14,10 @@ import java.util.List;
 public class Episode {
 
     @Id
-    int id;
+    Long id;
 
     private String air_date;
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<String> characters;
     private String created;
     private String episode;
