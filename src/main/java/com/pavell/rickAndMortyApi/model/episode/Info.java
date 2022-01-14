@@ -1,5 +1,5 @@
 
-package com.pavell.graphqlpoject.model.episode;
+package com.pavell.rickAndMortyApi.model.episode;
 
 import javax.annotation.Generated;
 

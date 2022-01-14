@@ -1,7 +1,7 @@
-package com.pavell.graphqlpoject.controller;
+package com.pavell.rickAndMortyApi.controller;
 
-import com.pavell.graphqlpoject.entity.Episode;
-import com.pavell.graphqlpoject.service.EpisodeService;
+import com.pavell.rickAndMortyApi.entity.Episode;
+import com.pavell.rickAndMortyApi.service.EpisodeService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

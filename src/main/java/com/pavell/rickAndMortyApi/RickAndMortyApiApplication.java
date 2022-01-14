@@ -1,15 +1,15 @@
-package com.pavell.graphqlpoject;
+package com.pavell.rickAndMortyApi;
 
-import com.pavell.graphqlpoject.entity.Episode;
-import com.pavell.graphqlpoject.entity.Location;
-import com.pavell.graphqlpoject.entity.character.Character;
-import com.pavell.graphqlpoject.model.character.PageCharacter;
-import com.pavell.graphqlpoject.model.episode.PageEpisode;
-import com.pavell.graphqlpoject.model.episode.Result;
-import com.pavell.graphqlpoject.model.location.PageLocation;
-import com.pavell.graphqlpoject.service.CharacterService;
-import com.pavell.graphqlpoject.service.EpisodeService;
-import com.pavell.graphqlpoject.service.LocationService;
+import com.pavell.rickAndMortyApi.entity.Episode;
+import com.pavell.rickAndMortyApi.entity.Location;
+import com.pavell.rickAndMortyApi.entity.character.Character;
+import com.pavell.rickAndMortyApi.model.character.PageCharacter;
+import com.pavell.rickAndMortyApi.model.episode.PageEpisode;
+import com.pavell.rickAndMortyApi.model.episode.Result;
+import com.pavell.rickAndMortyApi.model.location.PageLocation;
+import com.pavell.rickAndMortyApi.service.CharacterService;
+import com.pavell.rickAndMortyApi.service.EpisodeService;
+import com.pavell.rickAndMortyApi.service.LocationService;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -86,7 +86,7 @@ public class RickAndMortyApiApplication {
 
         ArrayList<Character> characters = new ArrayList<Character>();
         pageCharacterList.forEach(pageCharacterElement -> {
-            List<com.pavell.graphqlpoject.model.character.Result> results = pageCharacterElement.getResults();
+            List<com.pavell.rickAndMortyApi.model.character.Result> results = pageCharacterElement.getResults();
             results.forEach(result -> {
                 Character character = modelMapper().map(result, Character.class);
                 Long locationMaxId = locationService.getMaxId();
@@ -111,7 +111,7 @@ public class RickAndMortyApiApplication {
 
         ArrayList<Location> locations = new ArrayList<Location>();
         pageLocationList.forEach(pageLocationElement -> {
-            List<com.pavell.graphqlpoject.model.location.Result> results = pageLocationElement.getResults();
+            List<com.pavell.rickAndMortyApi.model.location.Result> results = pageLocationElement.getResults();
             results.forEach(result -> {
                 Location location = modelMapper().map(result, Location.class);
                 locations.add(location);

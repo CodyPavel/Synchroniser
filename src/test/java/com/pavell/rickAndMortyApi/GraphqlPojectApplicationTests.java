@@ -1,4 +1,4 @@
-package com.pavell.graphqlpoject;
+package com.pavell.rickAndMortyApi;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

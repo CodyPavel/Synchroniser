@@ -1,7 +1,7 @@
-package com.pavell.graphqlpoject.entity.character;
+package com.pavell.rickAndMortyApi.entity.character;
 
 
-import com.pavell.graphqlpoject.entity.Location;
+import com.pavell.rickAndMortyApi.entity.Location;
 import lombok.Data;
 
 import javax.persistence.*;

@@ -1,7 +1,7 @@
-package com.pavell.graphqlpoject.service;
+package com.pavell.rickAndMortyApi.service;
 
-import com.pavell.graphqlpoject.entity.Location;
-import com.pavell.graphqlpoject.repo.LocationRepo;
+import com.pavell.rickAndMortyApi.entity.Location;
+import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

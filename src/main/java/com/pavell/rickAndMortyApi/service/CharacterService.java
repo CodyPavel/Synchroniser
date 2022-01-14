@@ -1,7 +1,7 @@
-package com.pavell.graphqlpoject.service;
+package com.pavell.rickAndMortyApi.service;
 
-import com.pavell.graphqlpoject.entity.character.Character;
-import com.pavell.graphqlpoject.repo.CharacterRepo;
+import com.pavell.rickAndMortyApi.entity.character.Character;
+import com.pavell.rickAndMortyApi.repo.CharacterRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

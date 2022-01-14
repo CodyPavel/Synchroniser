@@ -1,4 +1,4 @@
-package com.pavell.graphqlpoject.entity;
+package com.pavell.rickAndMortyApi.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
-package com.pavell.graphqlpoject.repo;
+package com.pavell.rickAndMortyApi.repo;
 
-import com.pavell.graphqlpoject.entity.Location;
+import com.pavell.rickAndMortyApi.entity.Location;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
