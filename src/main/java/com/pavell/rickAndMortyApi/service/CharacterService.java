@@ -1,5 +1,6 @@
 package com.pavell.rickAndMortyApi.service;
 
+import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.entity.character.Character;
 import com.pavell.rickAndMortyApi.model.character.PageCharacter;
 import com.pavell.rickAndMortyApi.repo.CharacterRepo;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CharacterService {
@@ -37,7 +39,7 @@ public class CharacterService {
         characterRepo.saveAll(character);
     }
 
-    public void parseAndSaveAll(  RestTemplate restTemplate, String url) {
+    public void parseAndSaveAll(RestTemplate restTemplate, String url) {
         PageCharacter pageCharacter = restTemplate.getForObject(url, PageCharacter.class);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
@@ -54,8 +56,13 @@ public class CharacterService {
             List<com.pavell.rickAndMortyApi.model.character.Result> results = pageCharacterElement.getResults();
             results.forEach(result -> {
                 Character character = modelMapper.map(result, Character.class);
-                Long locationMaxId = locationRepo.getMaxId();
-                character.getLocation().setId(locationMaxId == null ? 1 : locationMaxId + 1);
+                Optional<Location> location = locationRepo.findByName(character.getLocation().getName());
+                if (location.isPresent()) {
+                    character.setLocation(location.get());
+                } else {
+                    Long locationMaxId = locationRepo.getMaxId();
+                    character.getLocation().setId(locationMaxId == null ? 1 : locationMaxId + 1);
+                }
                 save(character);
             });
         });
