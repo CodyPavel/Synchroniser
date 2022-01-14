@@ -17,6 +17,7 @@ public class Location {
 
     private String created;
     private String dimension;
+
     private String name;
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> residents;
