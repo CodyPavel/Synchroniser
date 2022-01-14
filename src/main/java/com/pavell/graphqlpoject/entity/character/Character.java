@@ -32,5 +32,4 @@ public class Character {
     private String type;
     private String url;
 
-
 }

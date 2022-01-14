@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface LocationRepo extends CrudRepository<Location, Long> {
 
-    @Query(value = "select max(id) from location",nativeQuery = true)
+    @Query(value = "select max(id) from location", nativeQuery = true)
     public Long getMaxId();
+
 }

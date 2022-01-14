@@ -16,31 +16,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.client.RestTemplate;
 
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 @SpringBootApplication
-public class GraphqlPojectApplication {
+public class RickAndmortyApiApplication {
 
     // TODO: Rename the GraphqlPojectApplication
     public static void main(String[] args) {
-        SpringApplication.run(GraphqlPojectApplication.class, args);
-    }
-
-    @Bean
-    public DataSource mysqlDataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("1111");
-
-        return dataSource;
+        SpringApplication.run(RickAndmortyApiApplication.class, args);
     }
 
     @Bean
@@ -59,8 +46,6 @@ public class GraphqlPojectApplication {
                              LocationService locationService,
                              RestTemplate restTemplate) {
         return args -> {
-
-            // TODO: RUN SQL Script
 
             HashMap<String, String> urls = new HashMap<>();
 
@@ -149,7 +134,6 @@ public class GraphqlPojectApplication {
                 break;
             }
         }
-
 
         ArrayList<Episode> episodes = new ArrayList<Episode>();
         pageEpisodeList.forEach(pageEpisodeElement -> {
