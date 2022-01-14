@@ -23,11 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 
 @SpringBootApplication
-public class RickAndmortyApiApplication {
+public class RickAndMortyApiApplication {
 
-    // TODO: Rename the GraphqlPojectApplication
     public static void main(String[] args) {
-        SpringApplication.run(RickAndmortyApiApplication.class, args);
+        SpringApplication.run(RickAndMortyApiApplication.class, args);
     }
 
     @Bean
