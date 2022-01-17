@@ -6,7 +6,7 @@ import javax.annotation.Generated;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class Result {
+public class CharacterDTO {
 
     private String created;
     private List<String> episode;
