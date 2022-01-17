@@ -1,5 +1,6 @@
 package com.pavell.rickAndMortyApi.service;
 
+import com.pavell.rickAndMortyApi.dto.location.LocationDTO;
 import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.dto.location.PageLocation;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
@@ -52,7 +53,7 @@ public class LocationService {
 
         ArrayList<Location> locations = new ArrayList<Location>();
         pageLocationList.forEach(pageLocationElement -> {
-            List<com.pavell.rickAndMortyApi.dto.location.Result> results = pageLocationElement.getResults();
+            List<LocationDTO> results = pageLocationElement.getResults();
             results.forEach(result -> {
                 Location location = modelMapper.map(result, Location.class);
                 locations.add(location);

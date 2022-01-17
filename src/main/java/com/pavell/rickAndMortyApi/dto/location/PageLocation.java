@@ -9,7 +9,7 @@ import javax.annotation.Generated;
 public class PageLocation {
 
     private Info info;
-    private List<Result> results;
+    private List<LocationDTO> results;
 
     public Info getInfo() {
         return info;
@@ -19,11 +19,11 @@ public class PageLocation {
         this.info = info;
     }
 
-    public List<Result> getResults() {
+    public List<LocationDTO> getResults() {
         return results;
     }
 
-    public void setResults(List<Result> results) {
+    public void setResults(List<LocationDTO> results) {
         this.results = results;
     }
 

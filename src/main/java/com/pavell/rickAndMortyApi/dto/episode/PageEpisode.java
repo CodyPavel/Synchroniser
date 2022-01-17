@@ -9,7 +9,7 @@ import javax.annotation.Generated;
 public class PageEpisode {
 
     private Info info;
-    private List<Result> results;
+    private List<EpisodeDTO> results;
 
     public Info getInfo() {
         return info;
@@ -19,11 +19,11 @@ public class PageEpisode {
         this.info = info;
     }
 
-    public List<Result> getResults() {
+    public List<EpisodeDTO> getResults() {
         return results;
     }
 
-    public void setResults(List<Result> results) {
+    public void setResults(List<EpisodeDTO> results) {
         this.results = results;
     }
 }
