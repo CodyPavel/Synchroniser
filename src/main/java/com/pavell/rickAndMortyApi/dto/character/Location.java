@@ -1,11 +1,11 @@
 
-package com.pavell.rickAndMortyApi.model.character;
+package com.pavell.rickAndMortyApi.dto.character;
 
 import javax.annotation.Generated;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class Origin {
+public class Location {
 
     private String name;
     private String url;

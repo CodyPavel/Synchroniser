@@ -1,5 +1,5 @@
 
-package com.pavell.rickAndMortyApi.model.character;
+package com.pavell.rickAndMortyApi.dto.location;
 
 import javax.annotation.Generated;
 

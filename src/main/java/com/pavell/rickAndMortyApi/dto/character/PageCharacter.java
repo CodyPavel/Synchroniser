@@ -1,12 +1,12 @@
 
-package com.pavell.rickAndMortyApi.model.episode;
+package com.pavell.rickAndMortyApi.dto.character;
 
 import java.util.List;
 import javax.annotation.Generated;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class PageEpisode {
+public class PageCharacter {
 
     private Info info;
     private List<Result> results;
@@ -26,4 +26,5 @@ public class PageEpisode {
     public void setResults(List<Result> results) {
         this.results = results;
     }
+
 }

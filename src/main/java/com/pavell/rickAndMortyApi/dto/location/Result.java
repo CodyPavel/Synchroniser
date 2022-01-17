@@ -1,5 +1,5 @@
 
-package com.pavell.rickAndMortyApi.model.episode;
+package com.pavell.rickAndMortyApi.dto.location;
 
 import java.util.List;
 import javax.annotation.Generated;
@@ -8,29 +8,13 @@ import javax.annotation.Generated;
 @SuppressWarnings("unused")
 public class Result {
 
-    private String air_date;
-    private List<String> characters;
     private String created;
-    private String episode;
+    private String dimension;
     private Long id;
     private String name;
+    private List<String> residents;
+    private String type;
     private String url;
-
-    public String getAir_date() {
-        return air_date;
-    }
-
-    public void setAir_date(String air_date) {
-        this.air_date = air_date;
-    }
-
-    public List<String> getCharacters() {
-        return characters;
-    }
-
-    public void setCharacters(List<String> characters) {
-        this.characters = characters;
-    }
 
     public String getCreated() {
         return created;
@@ -40,12 +24,12 @@ public class Result {
         this.created = created;
     }
 
-    public String getEpisode() {
-        return episode;
+    public String getDimension() {
+        return dimension;
     }
 
-    public void setEpisode(String episode) {
-        this.episode = episode;
+    public void setDimension(String dimension) {
+        this.dimension = dimension;
     }
 
     public Long getId() {
@@ -64,6 +48,22 @@ public class Result {
         this.name = name;
     }
 
+    public List<String> getResidents() {
+        return residents;
+    }
+
+    public void setResidents(List<String> residents) {
+        this.residents = residents;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -71,4 +71,5 @@ public class Result {
     public void setUrl(String url) {
         this.url = url;
     }
+
 }

@@ -1,5 +1,5 @@
 
-package com.pavell.rickAndMortyApi.model.episode;
+package com.pavell.rickAndMortyApi.dto.episode;
 
 import javax.annotation.Generated;
 

@@ -2,7 +2,7 @@ package com.pavell.rickAndMortyApi.service;
 
 import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.entity.character.Character;
-import com.pavell.rickAndMortyApi.model.character.PageCharacter;
+import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
 import com.pavell.rickAndMortyApi.repo.CharacterRepo;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import org.modelmapper.ModelMapper;
@@ -53,7 +53,7 @@ public class CharacterService {
         }
 
         pageCharacterList.forEach(pageCharacterElement -> {
-            List<com.pavell.rickAndMortyApi.model.character.Result> results = pageCharacterElement.getResults();
+            List<com.pavell.rickAndMortyApi.dto.character.Result> results = pageCharacterElement.getResults();
             results.forEach(result -> {
                 Character character = modelMapper.map(result, Character.class);
                 Optional<Location> location = locationRepo.findByName(character.getLocation().getName());

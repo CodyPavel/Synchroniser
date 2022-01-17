@@ -1,10 +1,12 @@
 package com.pavell.rickAndMortyApi.service;
 
 import com.pavell.rickAndMortyApi.entity.Episode;
-import com.pavell.rickAndMortyApi.model.episode.PageEpisode;
-import com.pavell.rickAndMortyApi.model.episode.Result;
+import com.pavell.rickAndMortyApi.dto.episode.PageEpisode;
+import com.pavell.rickAndMortyApi.dto.episode.Result;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import org.modelmapper.ModelMapper;
+
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,8 +21,13 @@ public class EpisodeService {
 
     private EpisodeRepo episodeRepo;
 
-    public Iterable<Episode> list() {
-        return episodeRepo.findAll();
+    public List<Episode> list() {
+        List<Episode> episodes = new ArrayList<>();
+        for (Episode episode : episodeRepo.findAll()) {
+            episodes.add(episode);
+        }
+
+        return episodes;
     }
 
     public Episode getById(Long id) {
