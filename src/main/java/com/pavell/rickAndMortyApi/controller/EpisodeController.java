@@ -31,7 +31,7 @@ public class EpisodeController {
         return episodeService.getEpisodeById(id);
     }
 
-    @RequestMapping(value = {"{ids}"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"multiple/{ids}"}, method = RequestMethod.GET)
     public List<EpisodeDTO> getEpisodes(@PathVariable String[]  ids) {
         return episodeService.getEpisodesByIds(ids);
     }
