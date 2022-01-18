@@ -26,38 +26,14 @@ public class RickAndMortyApiApplication {
     }
 
     @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
-
-    @Bean
     CommandLineRunner runner(EpisodeService episodeService,
                              CharacterService characterService,
                              LocationService locationService,
                              RestTemplate restTemplate) {
         return args -> {
-
-            LinkedHashMap<String, String> urls = new LinkedHashMap<>();
-
-            urls.put("locations", "https://rickandmortyapi.com/api/location");
-            urls.put("episodes", "https://rickandmortyapi.com/api/episode");
-            urls.put("characters", "https://rickandmortyapi.com/api/character");
-
-            urls.forEach((resourcesName, url) -> {
-                switch (resourcesName) {
-                    case "characters":
-                        characterService.parseAndSaveAll(restTemplate, urls.get(resourcesName));
-                        break;
-                    case "locations":
-                        locationService.parseAndSaveAll(restTemplate, urls.get(resourcesName));
-                        break;
-                    case "episodes":
-                        episodeService.parseAndSaveAll(restTemplate, urls.get(resourcesName));
-                        break;
-                    default:
-                }
-            });
+            locationService.loadData(restTemplate);
+            episodeService.loadData(restTemplate);
+            characterService.loadData(restTemplate);
         };
     }
-
 }

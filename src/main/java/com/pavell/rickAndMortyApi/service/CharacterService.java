@@ -17,6 +17,9 @@ import java.util.Optional;
 @Service
 public class CharacterService {
 
+    private final static String CHARACTER_RESOURCE_URL ="https://rickandmortyapi.com/api/character";
+
+
     private ModelMapper modelMapper = new ModelMapper();
 
     private CharacterRepo characterRepo;
@@ -40,8 +43,8 @@ public class CharacterService {
         characterRepo.saveAll(character);
     }
 
-    public void parseAndSaveAll(RestTemplate restTemplate, String url) {
-        PageCharacter pageCharacter = restTemplate.getForObject(url, PageCharacter.class);
+    public void loadData(RestTemplate restTemplate ) {
+        PageCharacter pageCharacter = restTemplate.getForObject(CHARACTER_RESOURCE_URL, PageCharacter.class);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
         while (true) {

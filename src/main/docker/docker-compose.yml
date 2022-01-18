@@ -2,7 +2,7 @@ version: '3'
 
 services:
   PostgreSQLAdmin:
-    container_name: db_monitoring
+    container_name: db
     restart: always
     image: postgres:11.6-alpine
     ports:
