@@ -14,6 +14,8 @@ import java.util.List;
 @Service
 public class LocationService {
 
+    private final static String LOCATION_RESOURCE_URL = "https://rickandmortyapi.com/api/location";
+
     private ModelMapper modelMapper = new ModelMapper();
 
     private LocationRepo locationRepo;
@@ -38,8 +40,8 @@ public class LocationService {
         return locationRepo.getMaxId();
     }
 
-    public void parseAndSaveAll(RestTemplate restTemplate, String url) {
-        PageLocation pageLocation = restTemplate.getForObject(url, PageLocation.class);
+    public void loadData(RestTemplate restTemplate) {
+        PageLocation pageLocation = restTemplate.getForObject(LOCATION_RESOURCE_URL, PageLocation.class);
 
         List<PageLocation> pageLocationList = new ArrayList<>();
         while (true) {
