@@ -4,9 +4,6 @@ import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponseEpisodeDTO;
 import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponsePageEpisodeDTO;
 import com.pavell.rickAndMortyApi.service.EpisodeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -20,29 +17,26 @@ public class EpisodeController {
     private final EpisodeService episodeService;
 
     @GetMapping
-    public ResponseEntity<ResponsePageEpisodeDTO> getPage(@RequestParam(required = false) Long page) {
-        ResponsePageEpisodeDTO responsePageEpisodeDTO = episodeService.getPage(page);
-        return new ResponseEntity<>(responsePageEpisodeDTO, HttpHeaders.EMPTY, HttpStatus.OK);
+    public ResponsePageEpisodeDTO getPage(@RequestParam(required = false) Long page) {
+        return episodeService.getPage(page);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ResponseEpisodeDTO> getEpisode(@PathVariable Long id) {
-        ResponseEpisodeDTO responseEpisodeDTO = episodeService.getEpisodeById(id);
-        return new ResponseEntity<>(responseEpisodeDTO, HttpHeaders.EMPTY, HttpStatus.OK);
+    public ResponseEpisodeDTO getEpisode(@PathVariable Long id) {
+        return episodeService.getEpisodeById(id);
     }
 
     @GetMapping(value = {"/multiple/{ids}"})
-    public ResponseEntity<List<ResponseEpisodeDTO>> getEpisodes(@PathVariable String[] ids) {
-        List<ResponseEpisodeDTO> episodeDTOList = episodeService.getEpisodesByIds(ids);
-        return new ResponseEntity<>(episodeDTOList, HttpHeaders.EMPTY, HttpStatus.OK);
+    public List<ResponseEpisodeDTO> getEpisodes(@PathVariable String[] ids) {
+        return episodeService.getEpisodesByIds(ids);
     }
 
     @GetMapping("/")
-    public ResponseEntity<ResponsePageEpisodeDTO> getFilteredPage(@RequestParam(required = false) String air_date,
-                                                                  @RequestParam(required = false) String name,
-                                                                  @RequestParam(required = false) Long page) throws ParseException {
+    public ResponsePageEpisodeDTO getFilteredPage(@RequestParam(required = false) String air_date,
+                                                  @RequestParam(required = false) String name,
+                                                  @RequestParam(required = false) Long page) throws ParseException {
         ResponsePageEpisodeDTO pageEpisode = episodeService.getFilteredPage(air_date, name, page);
-        return new ResponseEntity<>(pageEpisode, HttpHeaders.EMPTY, HttpStatus.OK);
+        return pageEpisode;
     }
 
 }

@@ -1,6 +1,7 @@
 package com.pavell.rickAndMortyApi.service;
 
 import com.pavell.rickAndMortyApi.dto.character.CharacterDTO;
+import com.pavell.rickAndMortyApi.dto.responseDTO.character.ResponsePageCharacterDTO;
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.entity.Character;
@@ -10,6 +11,7 @@ import com.pavell.rickAndMortyApi.repo.CharacterRepo;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -49,6 +51,12 @@ public class CharacterService {
 
     public void save(List<Character> character) {
         characterRepo.saveAll(character);
+    }
+
+    public ResponsePageCharacterDTO getPage(Long page) {
+        if (page == null) page = 1L;
+//        Page
+        return  new ResponsePageCharacterDTO();
     }
 
     public void loadData(RestTemplate restTemplate) {
