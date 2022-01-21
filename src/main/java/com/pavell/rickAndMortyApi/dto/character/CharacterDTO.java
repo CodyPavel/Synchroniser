@@ -1,17 +1,19 @@
 
 package com.pavell.rickAndMortyApi.dto.character;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.annotation.Generated;
+
+import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class CharacterDTO {
 
-    private String created;
+    private LocalDateTime created;
     private List<String> episode;
     private String gender;
-    private Long id;
     private String image;
     private Location location;
     private String name;
@@ -21,12 +23,12 @@ public class CharacterDTO {
     private String type;
     private String url;
 
-    public String getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
     public void setCreated(String created) {
-        this.created = created;
+        this.created = parseDateTime(created);
     }
 
     public List<String> getEpisode() {
@@ -43,14 +45,6 @@ public class CharacterDTO {
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getImage() {

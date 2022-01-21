@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -14,14 +16,17 @@ import java.util.List;
 public class Episode {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    private String air_date;
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> characters;
-    private String created;
-    private String episode;
     private String name;
-    private String url;
+    private Date air_date;
+    private LocalDateTime created;
 
+
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER,mappedBy = "episode" )
+    private List<Character> characters;
+
+    private String episode;
+    private String url;
 }
