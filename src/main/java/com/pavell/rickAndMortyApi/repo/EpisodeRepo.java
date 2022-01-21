@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
+
 @Repository
 public interface EpisodeRepo
         extends PagingAndSortingRepository<Episode, Long>, JpaSpecificationExecutor<Episode> {
@@ -13,5 +16,6 @@ public interface EpisodeRepo
     @Query(value = "select count(*) from episode", nativeQuery = true)
     public Integer getCount();
 
+    public Optional<Episode> findByUrl(String url);
 
 }

@@ -1,23 +1,28 @@
 package com.pavell.rickAndMortyApi.service;
 
 import com.pavell.rickAndMortyApi.dto.character.CharacterDTO;
+import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.entity.Location;
-import com.pavell.rickAndMortyApi.entity.character.Character;
+import com.pavell.rickAndMortyApi.entity.Character;
 import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
+import com.pavell.rickAndMortyApi.enums.CharacterStatus;
 import com.pavell.rickAndMortyApi.repo.CharacterRepo;
+import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CharacterService {
 
-    private final static String CHARACTER_RESOURCE_URL ="https://rickandmortyapi.com/api/character";
+    private final static String CHARACTER_RESOURCE_URL = "https://rickandmortyapi.com/api/character";
 
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -26,9 +31,12 @@ public class CharacterService {
 
     private LocationRepo locationRepo;
 
-    public CharacterService(CharacterRepo characterRepo, LocationRepo locationRepo) {
+    private EpisodeRepo episodeRepo;
+
+    public CharacterService(CharacterRepo characterRepo, LocationRepo locationRepo, EpisodeRepo episodeRepo) {
         this.locationRepo = locationRepo;
         this.characterRepo = characterRepo;
+        this.episodeRepo = episodeRepo;
     }
 
     public Iterable<Character> list() {
@@ -43,7 +51,7 @@ public class CharacterService {
         characterRepo.saveAll(character);
     }
 
-    public void loadData(RestTemplate restTemplate ) {
+    public void loadData(RestTemplate restTemplate) {
         PageCharacter pageCharacter = restTemplate.getForObject(CHARACTER_RESOURCE_URL, PageCharacter.class);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
@@ -56,17 +64,35 @@ public class CharacterService {
             }
         }
 
+
+
         pageCharacterList.forEach(pageCharacterElement -> {
             List<CharacterDTO> results = pageCharacterElement.getResults();
             results.forEach(result -> {
                 Character character = modelMapper.map(result, Character.class);
+
+                character.setStatus(CharacterStatus.valueOf(result.getStatus().toUpperCase()));
+
                 Optional<Location> location = locationRepo.findByName(character.getLocation().getName());
-                if (location.isPresent()) {
-                    character.setLocation(location.get());
-                } else {
-                    Long locationMaxId = locationRepo.getMaxId();
-                    character.getLocation().setId(locationMaxId == null ? 1 : locationMaxId + 1);
+                Optional<Location> origin = locationRepo.findByName(character.getOrigin().getName());
+
+                if (!origin.isPresent()){
+                    character.setOrigin(null);
                 }
+                if (!location.isPresent()){
+                    character.setLocation(null);
+                }
+                origin.ifPresent(character::setOrigin);
+                location.ifPresent(character::setLocation);
+
+                List<Episode> episodeList = new ArrayList<>();
+                result.getEpisode().forEach(episode -> {
+                    Optional<Episode> optionalEpisode = episodeRepo.findByUrl(episode);
+                    optionalEpisode.ifPresent(episodeList::add);
+                });
+                character.setEpisode(episodeList);
+
+
                 save(character);
             });
         });

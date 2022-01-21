@@ -1,10 +1,10 @@
 package com.pavell.rickAndMortyApi.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
+
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -12,18 +12,16 @@ import java.util.List;
 public class Location {
 
     @Id
-    @Column(name="id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String created;
+    private String name;
+    private String type;
     private String dimension;
 
-    @Column(name="name")
-    private String name;
-    @Fetch(value = FetchMode.SUBSELECT)
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> residents;
-    private String type;
-    private String url;
+    @OneToMany(  mappedBy = "location", cascade = CascadeType.ALL)
+    private List<Character> residents;
+
+    private LocalDateTime created;
 
 }

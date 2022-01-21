@@ -1,27 +1,32 @@
 
 package com.pavell.rickAndMortyApi.dto.location;
 
+import com.pavell.rickAndMortyApi.utils.TimeDateUtils;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.Generated;
+
+import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class LocationDTO {
 
-    private String created;
+    private LocalDateTime created;
     private String dimension;
-    private Long id;
     private String name;
-    private List<String> residents;
     private String type;
     private String url;
 
-    public String getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
     public void setCreated(String created) {
-        this.created = created;
+        this.created = parseDateTime(created);
     }
 
     public String getDimension() {
@@ -32,13 +37,7 @@ public class LocationDTO {
         this.dimension = dimension;
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -48,13 +47,6 @@ public class LocationDTO {
         this.name = name;
     }
 
-    public List<String> getResidents() {
-        return residents;
-    }
-
-    public void setResidents(List<String> residents) {
-        this.residents = residents;
-    }
 
     public String getType() {
         return type;

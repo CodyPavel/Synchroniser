@@ -5,7 +5,6 @@ import com.pavell.rickAndMortyApi.dto.episode.PageEpisode;
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.service.EpisodeService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EpisodeController {
 
-    final private EpisodeService episodeService;
-
-    private ModelMapper modelMapper = new ModelMapper();
+    private final EpisodeService episodeService;
 
     @GetMapping
     public ResponseEntity<PageEpisode> getPage(@RequestParam(required = false) Long page) {
@@ -54,3 +51,6 @@ public class EpisodeController {
         return new ResponseEntity<>(episodeList, HttpHeaders.EMPTY, HttpStatus.OK);
     }
 }
+
+
+

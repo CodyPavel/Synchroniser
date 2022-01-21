@@ -1,43 +1,45 @@
 
 package com.pavell.rickAndMortyApi.dto.episode;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.Generated;
+
+import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 public class EpisodeDTO {
 
-    private String air_date;
-    private List<String> characters;
-    private String created;
+    private Date air_date;
+    private LocalDateTime created;
     private String episode;
-    private Long id;
     private String name;
     private String url;
 
-    public String getAir_date() {
+    public Date getAir_date() {
         return air_date;
     }
 
-    public void setAir_date(String air_date) {
-        this.air_date = air_date;
+    public void setAir_date(String air_date) throws ParseException {
+        DateFormat format = new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
+        Date newAirDate = format.parse(air_date);
+        this.air_date = newAirDate;
     }
 
-    public List<String> getCharacters() {
-        return characters;
-    }
 
-    public void setCharacters(List<String> characters) {
-        this.characters = characters;
-    }
-
-    public String getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
     public void setCreated(String created) {
-        this.created = created;
+        this.created = parseDateTime(created);
     }
 
     public String getEpisode() {
@@ -46,14 +48,6 @@ public class EpisodeDTO {
 
     public void setEpisode(String episode) {
         this.episode = episode;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
