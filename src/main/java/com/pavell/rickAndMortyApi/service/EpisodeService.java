@@ -3,11 +3,16 @@ package com.pavell.rickAndMortyApi.service;
 import com.pavell.rickAndMortyApi.dto.episode.EpisodeDTO;
 import com.pavell.rickAndMortyApi.dto.episode.Info;
 import com.pavell.rickAndMortyApi.dto.episode.PageEpisode;
+import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponseEpisodeDTO;
+import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponseInfoDTO;
+import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponsePageEpisodeDTO;
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import com.pavell.rickAndMortyApi.specification.EpisodeSpecification;
 import com.pavell.rickAndMortyApi.specification.SearchCriteria;
+import com.pavell.rickAndMortyApi.utils.TimeDateUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.jni.Time;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,13 +21,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 public class EpisodeService {
 
-    private final static String EPISODE_RESOURCE_URL ="https://rickandmortyapi.com/api/episode";
+    private final static String EPISODE_RESOURCE_URL = "https://rickandmortyapi.com/api/episode";
 
     private final static String FIRST_EPISODE_PAGE = "http://localhost:8080/api/episode";
     private final static String EPISODE_PAGE = "http://localhost:8080/api/episode?page=";
@@ -57,47 +63,48 @@ public class EpisodeService {
         episodeRepo.saveAll(episodes);
     }
 
-    public PageEpisode getPage(Long page) {
+    public ResponsePageEpisodeDTO getPage(Long page) {
         if (page == null) page = 1L;
         Page<Episode> episodePage = episodeRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
 
-        PageEpisode pageEpisode = parseToPageEpisode(episodePage);
+        ResponsePageEpisodeDTO responsePageEpisodeDTO = parseToPageEpisode(episodePage);
 
-        Info info = createInfo(episodePage);
+        ResponseInfoDTO info = createInfo(episodePage);
         setPrevAndNextToInfo(info, episodePage, page);
-        pageEpisode.setInfo(info);
+        responsePageEpisodeDTO.setInfo(info);
 
-        return pageEpisode;
+        return responsePageEpisodeDTO;
     }
 
-    public EpisodeDTO getEpisodeById(Long id) {
+    public ResponseEpisodeDTO getEpisodeById(Long id) {
 
         Optional<Episode> optionalEpisode = episodeRepo.findById(id);
         if (optionalEpisode.isPresent()) {
-            return modelMapper.map(optionalEpisode.get(), EpisodeDTO.class);
+            return modelMapper.map(optionalEpisode.get(), ResponseEpisodeDTO.class);
         } else {
             //TODO:return exception
-            return new EpisodeDTO();
+            return new ResponseEpisodeDTO();
         }
     }
 
-    public List<EpisodeDTO> getEpisodesByIds(String[] ids) {
-        List<EpisodeDTO> episodes = new ArrayList<>();
+    public List<ResponseEpisodeDTO> getEpisodesByIds(String[] ids) {
+        List<ResponseEpisodeDTO> episodes = new ArrayList<>();
 
         Arrays.stream(ids).forEach(id -> {
                     Optional<Episode> optionalEpisode = episodeRepo.findById(Long.valueOf(id));
-                    optionalEpisode.ifPresent(episode -> episodes.add(modelMapper.map(episode, EpisodeDTO.class)));
+                    optionalEpisode.ifPresent(episode -> episodes.add(modelMapper.map(episode, ResponseEpisodeDTO.class)));
                 }
         );
 
         return episodes;
     }
 
-    public PageEpisode getFilteredPage(String air_date, String name, Long page) {
-        Page<Episode> pageEntity = episodeRepo.findAll(createSpecification(air_date, name), PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
-        PageEpisode pageEpisode = parseToPageEpisode(pageEntity);
+    public ResponsePageEpisodeDTO getFilteredPage(String air_date, String name, Long page) throws ParseException {
+        Date date = air_date == null ? null : TimeDateUtils.parseDate(air_date);
+        Page<Episode> pageEntity = episodeRepo.findAll(createSpecification(date, name), PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+        ResponsePageEpisodeDTO pageEpisode = parseToPageEpisode(pageEntity);
 
-        Info info = createInfo(pageEntity);
+        ResponseInfoDTO info = createInfo(pageEntity);
 
         Map<String, String> map = new HashMap<>();
         map.put("air_date", air_date);
@@ -109,11 +116,11 @@ public class EpisodeService {
         return pageEpisode;
     }
 
-    private PageEpisode parseToPageEpisode(Page<Episode> page) {
-        List<EpisodeDTO> resultList = new ArrayList<>();
-        page.get().forEach(episode -> resultList.add(modelMapper.map(episode, EpisodeDTO.class)));
+    private ResponsePageEpisodeDTO parseToPageEpisode(Page<Episode> page) {
+        List<ResponseEpisodeDTO> resultList = new ArrayList<>();
+        page.get().forEach(episode -> resultList.add(modelMapper.map(episode, ResponseEpisodeDTO.class)));
 
-        PageEpisode pageEpisode = new PageEpisode();
+        ResponsePageEpisodeDTO pageEpisode = new ResponsePageEpisodeDTO();
         pageEpisode.setResults(resultList);
 
         return pageEpisode;
@@ -144,15 +151,15 @@ public class EpisodeService {
         save(episodes);
     }
 
-    private Info createInfo(Page page) {
-        Info info = new Info();
+    private ResponseInfoDTO createInfo(Page page) {
+        ResponseInfoDTO info = new ResponseInfoDTO();
         info.setCount(page.getTotalElements());
         info.setPages((long) page.getTotalPages());
 
         return info;
     }
 
-    private void setPrevAndNextToInfo(Info info, Page<Episode> episodePage, Long page) {
+    private void setPrevAndNextToInfo(ResponseInfoDTO info, Page<Episode> episodePage, Long page) {
         String next = null;
         String prev = null;
         if (page == null || episodePage.getTotalPages() == page) {
@@ -173,7 +180,7 @@ public class EpisodeService {
         isSinglePage(episodePage, info);
     }
 
-    private void setPrevAndNextToInfoWithRequestParams(Info info, Page<Episode> episodePage, Long page, Map<String, String> params) {
+    private void setPrevAndNextToInfoWithRequestParams(ResponseInfoDTO info, Page<Episode> episodePage, Long page, Map<String, String> params) {
         setPrevAndNextToInfo(info, episodePage, page);
         String next;
         String prev;
@@ -196,14 +203,14 @@ public class EpisodeService {
         isSinglePage(episodePage, info);
     }
 
-    private void isSinglePage(Page<Episode> episodePage, Info info) {
+    private void isSinglePage(Page<Episode> episodePage, ResponseInfoDTO info) {
         if (episodePage.getTotalPages() == 1 || episodePage.getTotalPages() == 0) {
             info.setNext(null);
             info.setPrev(null);
         }
     }
 
-    private Specification<Episode> createSpecification(String air_date, String name) {
+    private Specification<Episode> createSpecification(Date air_date, String name) {
         EpisodeSpecification specName = new EpisodeSpecification(new SearchCriteria("name", ";", name));
         EpisodeSpecification specAirDate = new EpisodeSpecification(new SearchCriteria("air_date", ";", air_date));
         Specification<Episode> specification = null;

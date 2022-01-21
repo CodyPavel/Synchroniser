@@ -25,16 +25,14 @@ public class Character {
     private String gender;
 
     @ManyToOne()
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "origin_id", referencedColumnName = "id")
     private Location origin;
 
     @ManyToOne()
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    @ManyToMany(fetch = FetchType.EAGER,   cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "episode_character",
             joinColumns = @JoinColumn(name = "episode_id"),

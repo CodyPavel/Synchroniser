@@ -61,6 +61,6 @@ public class LocationService {
                 locations.add(location);
             });
         });
-            save(locations);
+        save(locations);
     }
 }
