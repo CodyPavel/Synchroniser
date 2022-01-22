@@ -1,8 +1,8 @@
 
-package com.pavell.rickAndMortyApi.dto.responseDTO.episode;
+package com.pavell.rickAndMortyApi.response;
 
-import com.pavell.rickAndMortyApi.dto.responseDTO.character.ResponseCharacterDTO;
 import com.pavell.rickAndMortyApi.entity.Character;
+import com.pavell.rickAndMortyApi.response.common.AbstractResult;
 
 import javax.annotation.Generated;
 import java.text.DateFormat;
@@ -18,7 +18,7 @@ import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class ResponseEpisodeDTO {
+public class EpisodeResponse extends AbstractResult {
 
     private Long id;
     private Date air_date;
@@ -35,11 +35,9 @@ public class ResponseEpisodeDTO {
     }
 
     public void setCharacters(List<Character> characters) {
-
+        //TODO: Change name to url
         ArrayList arrayList = new ArrayList();
-        characters.forEach(character -> {
-            arrayList.add(character.getName());
-        });
+        characters.forEach(character -> arrayList.add(character.getName()));
         this.characters = arrayList;
     }
 

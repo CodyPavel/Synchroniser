@@ -1,20 +1,17 @@
 package com.pavell.rickAndMortyApi.service;
 
 import com.pavell.rickAndMortyApi.dto.episode.EpisodeDTO;
-import com.pavell.rickAndMortyApi.dto.episode.Info;
 import com.pavell.rickAndMortyApi.dto.episode.PageEpisode;
-import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponseEpisodeDTO;
-import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponseInfoDTO;
-import com.pavell.rickAndMortyApi.dto.responseDTO.episode.ResponsePageEpisodeDTO;
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
+import com.pavell.rickAndMortyApi.response.common.InfoResponse;
+import com.pavell.rickAndMortyApi.response.common.PageResponse;
+import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.specification.EpisodeSpecification;
 import com.pavell.rickAndMortyApi.specification.SearchCriteria;
 import com.pavell.rickAndMortyApi.utils.TimeDateUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.jni.Time;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,14 +22,11 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.pavell.rickAndMortyApi.utils.Constants.*;
+import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
+
 @Service
 public class EpisodeService {
-
-    private final static String EPISODE_RESOURCE_URL = "https://rickandmortyapi.com/api/episode";
-
-    private final static String FIRST_EPISODE_PAGE = "http://localhost:8080/api/episode";
-    private final static String EPISODE_PAGE = "http://localhost:8080/api/episode?page=";
-    private final static int SIZE = 20;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -63,48 +57,48 @@ public class EpisodeService {
         episodeRepo.saveAll(episodes);
     }
 
-    public ResponsePageEpisodeDTO getPage(Long page) {
+    public PageResponse getPage(Long page) {
         if (page == null) page = 1L;
         Page<Episode> episodePage = episodeRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
 
-        ResponsePageEpisodeDTO responsePageEpisodeDTO = parseToPageEpisode(episodePage);
+        PageResponse pageResponse = parseToPageEpisode(episodePage);
 
-        ResponseInfoDTO info = createInfo(episodePage);
+        InfoResponse info = createInfoResponse(episodePage);
         setPrevAndNextToInfo(info, episodePage, page);
-        responsePageEpisodeDTO.setInfo(info);
+        pageResponse.setInfo(info);
 
-        return responsePageEpisodeDTO;
+        return pageResponse;
     }
 
-    public ResponseEpisodeDTO getEpisodeById(Long id) {
+    public EpisodeResponse getEpisodeById(Long id) {
 
         Optional<Episode> optionalEpisode = episodeRepo.findById(id);
         if (optionalEpisode.isPresent()) {
-            return modelMapper.map(optionalEpisode.get(), ResponseEpisodeDTO.class);
+            return modelMapper.map(optionalEpisode.get(), EpisodeResponse.class);
         } else {
             //TODO:return exception
-            return new ResponseEpisodeDTO();
+            return new EpisodeResponse();
         }
     }
 
-    public List<ResponseEpisodeDTO> getEpisodesByIds(String[] ids) {
-        List<ResponseEpisodeDTO> episodes = new ArrayList<>();
+    public List<EpisodeResponse> getEpisodesByIds(String[] ids) {
+        List<EpisodeResponse> episodes = new ArrayList<>();
 
         Arrays.stream(ids).forEach(id -> {
                     Optional<Episode> optionalEpisode = episodeRepo.findById(Long.valueOf(id));
-                    optionalEpisode.ifPresent(episode -> episodes.add(modelMapper.map(episode, ResponseEpisodeDTO.class)));
+                    optionalEpisode.ifPresent(episode -> episodes.add(modelMapper.map(episode, EpisodeResponse.class)));
                 }
         );
 
         return episodes;
     }
 
-    public ResponsePageEpisodeDTO getFilteredPage(String air_date, String name, Long page) throws ParseException {
+    public PageResponse getFilteredPage(String air_date, String name, Long page) throws ParseException {
         Date date = air_date == null ? null : TimeDateUtils.parseDate(air_date);
         Page<Episode> pageEntity = episodeRepo.findAll(createSpecification(date, name), PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
-        ResponsePageEpisodeDTO pageEpisode = parseToPageEpisode(pageEntity);
+        PageResponse pageEpisode = parseToPageEpisode(pageEntity);
 
-        ResponseInfoDTO info = createInfo(pageEntity);
+        InfoResponse info = createInfoResponse(pageEntity);
 
         Map<String, String> map = new HashMap<>();
         map.put("air_date", air_date);
@@ -116,18 +110,18 @@ public class EpisodeService {
         return pageEpisode;
     }
 
-    private ResponsePageEpisodeDTO parseToPageEpisode(Page<Episode> page) {
-        List<ResponseEpisodeDTO> resultList = new ArrayList<>();
-        page.get().forEach(episode -> resultList.add(modelMapper.map(episode, ResponseEpisodeDTO.class)));
+    private PageResponse parseToPageEpisode(Page<Episode> page) {
+        List<EpisodeResponse> resultList = new ArrayList<>();
+        page.get().forEach(episode -> resultList.add(modelMapper.map(episode, EpisodeResponse.class)));
 
-        ResponsePageEpisodeDTO pageEpisode = new ResponsePageEpisodeDTO();
+        PageResponse pageEpisode = new PageResponse();
         pageEpisode.setResults(resultList);
 
         return pageEpisode;
     }
 
     public void loadData(RestTemplate restTemplate) {
-        PageEpisode pageEpisode = restTemplate.getForObject(EPISODE_RESOURCE_URL, PageEpisode.class);
+        PageEpisode pageEpisode = restTemplate.getForObject(RESOURCE_EPISODE_URL, PageEpisode.class);
 
         List<PageEpisode> pageEpisodeList = new ArrayList<>();
         while (true) {
@@ -151,28 +145,22 @@ public class EpisodeService {
         save(episodes);
     }
 
-    private ResponseInfoDTO createInfo(Page page) {
-        ResponseInfoDTO info = new ResponseInfoDTO();
-        info.setCount(page.getTotalElements());
-        info.setPages((long) page.getTotalPages());
 
-        return info;
-    }
 
-    private void setPrevAndNextToInfo(ResponseInfoDTO info, Page<Episode> episodePage, Long page) {
+    private void setPrevAndNextToInfo(InfoResponse info, Page<Episode> episodePage, Long page) {
         String next = null;
         String prev = null;
         if (page == null || episodePage.getTotalPages() == page) {
             next = null;
         } else {
-            next = EPISODE_PAGE + (page + 1);
+            next = EPISODE_URL + REQUEST_PARAM_PAGE_DELIMITER + (page + 1);
         }
         if (page == null || page == 2) {
-            prev = FIRST_EPISODE_PAGE;
+            prev = EPISODE_URL;
         } else if (page == 1) {
             prev = null;
         } else {
-            prev = EPISODE_PAGE + (page - 1);
+            prev = EPISODE_URL + REQUEST_PARAM_PAGE_DELIMITER + (page - 1);
         }
 
         info.setNext(next);
@@ -180,7 +168,7 @@ public class EpisodeService {
         isSinglePage(episodePage, info);
     }
 
-    private void setPrevAndNextToInfoWithRequestParams(ResponseInfoDTO info, Page<Episode> episodePage, Long page, Map<String, String> params) {
+    private void setPrevAndNextToInfoWithRequestParams(InfoResponse info, Page<Episode> episodePage, Long page, Map<String, String> params) {
         setPrevAndNextToInfo(info, episodePage, page);
         String next;
         String prev;
@@ -203,7 +191,7 @@ public class EpisodeService {
         isSinglePage(episodePage, info);
     }
 
-    private void isSinglePage(Page<Episode> episodePage, ResponseInfoDTO info) {
+    private void isSinglePage(Page<Episode> episodePage, InfoResponse info) {
         if (episodePage.getTotalPages() == 1 || episodePage.getTotalPages() == 0) {
             info.setNext(null);
             info.setPrev(null);

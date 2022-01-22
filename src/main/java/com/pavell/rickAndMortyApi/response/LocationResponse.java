@@ -1,5 +1,5 @@
 
-package com.pavell.rickAndMortyApi.dto.responseDTO.location;
+package com.pavell.rickAndMortyApi.response;
 
 import javax.annotation.Generated;
 import java.time.LocalDateTime;
@@ -8,7 +8,7 @@ import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class ResponseLocationDTO {
+public class LocationResponse {
 
     private LocalDateTime created;
     private String dimension;

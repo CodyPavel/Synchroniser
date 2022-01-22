@@ -1,16 +1,16 @@
+package com.pavell.rickAndMortyApi.response.common;
 
-package com.pavell.rickAndMortyApi.dto.responseDTO.episode;
 
 import javax.annotation.Generated;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
-public class ResponseInfoDTO {
+public class InfoResponse {
 
     private Long count;
-    private String next;
     private Long pages;
     private String prev;
+    private String next;
 
     public Long getCount() {
         return count;

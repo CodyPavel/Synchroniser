@@ -1,5 +1,7 @@
 package com.pavell.rickAndMortyApi.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,6 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
+@UtilityClass
 public final class TimeDateUtils {
 
     public static LocalDateTime parseDateTime(String dateTime) {
