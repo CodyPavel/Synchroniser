@@ -4,6 +4,7 @@ import com.pavell.rickAndMortyApi.dto.location.LocationDTO;
 import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.dto.location.PageLocation;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
+import com.pavell.rickAndMortyApi.utils.Constants;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,10 +12,11 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.pavell.rickAndMortyApi.utils.Constants.LOCATION_URL;
+import static com.pavell.rickAndMortyApi.utils.Constants.RESOURCE_LOCATION_URL;
+
 @Service
 public class LocationService {
-
-    private final static String LOCATION_RESOURCE_URL = "https://rickandmortyapi.com/api/location";
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -41,7 +43,7 @@ public class LocationService {
     }
 
     public void loadData(RestTemplate restTemplate) {
-        PageLocation pageLocation = restTemplate.getForObject(LOCATION_RESOURCE_URL, PageLocation.class);
+        PageLocation pageLocation = restTemplate.getForObject(RESOURCE_LOCATION_URL, PageLocation.class);
 
         List<PageLocation> pageLocationList = new ArrayList<>();
         while (true) {
@@ -61,6 +63,6 @@ public class LocationService {
                 locations.add(location);
             });
         });
-            save(locations);
+        save(locations);
     }
 }

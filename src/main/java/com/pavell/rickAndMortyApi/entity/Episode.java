@@ -24,7 +24,7 @@ public class Episode {
     private LocalDateTime created;
 
 
-    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER,mappedBy = "episode" )
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "episode")
     private List<Character> characters;
 
     private String episode;

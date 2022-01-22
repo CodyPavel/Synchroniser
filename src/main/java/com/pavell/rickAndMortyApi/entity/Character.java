@@ -1,6 +1,7 @@
 package com.pavell.rickAndMortyApi.entity;
 
 import com.pavell.rickAndMortyApi.enums.CharacterStatus;
+import com.pavell.rickAndMortyApi.enums.Gender;
 import lombok.Data;
 import org.hibernate.annotations.Cascade;
 
@@ -22,19 +23,17 @@ public class Character {
 
     private String species;
 
-    private String gender;
+    private Gender gender;
 
     @ManyToOne()
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "origin_id", referencedColumnName = "id")
     private Location origin;
 
     @ManyToOne()
-    @Cascade(org.hibernate.annotations.CascadeType.SAVE_UPDATE)
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     private Location location;
 
-    @ManyToMany(fetch = FetchType.EAGER,   cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "episode_character",
             joinColumns = @JoinColumn(name = "episode_id"),
