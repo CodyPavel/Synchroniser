@@ -20,7 +20,7 @@ public class CharacterSpecification {
                 if (searchCriteria.getGender() != null) {
                     predicates.add(cb.equal(root.get("gender"), searchCriteria.getGender()));
                 }
-                if (searchCriteria.getStatus() != null  ) {
+                if (searchCriteria.getStatus() != null) {
                     predicates.add(cb.equal(root.get("status"), searchCriteria.getStatus()));
                 }
                 if (searchCriteria.getSpecies() != null && !searchCriteria.getSpecies().isEmpty()) {
@@ -36,9 +36,5 @@ public class CharacterSpecification {
                 return cb.and(predicates.toArray(new Predicate[]{}));
             }
         };
-
-
     }
-
-
 }

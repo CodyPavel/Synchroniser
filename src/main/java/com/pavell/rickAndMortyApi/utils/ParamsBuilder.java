@@ -3,15 +3,12 @@ package com.pavell.rickAndMortyApi.utils;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Page;
 
-import javax.persistence.Entity;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @UtilityClass
 public final class ParamsBuilder {
-
 
     public static void setRequestParamsToPrevAndNext(InfoResponse info, Map<String, String> params) {
         String next;
@@ -20,9 +17,9 @@ public final class ParamsBuilder {
         params.forEach((key, value) -> {
 
             String param = key + "=" + value;
-            if (StringUtils.EMPTY.equalsIgnoreCase(allParams.get())&& value != null) {
-                    allParams.set("/?" + param);
-            }else if (value != null) {
+            if (StringUtils.EMPTY.equalsIgnoreCase(allParams.get()) && value != null) {
+                allParams.set("/?" + param);
+            } else if (value != null) {
                 allParams.set(allParams + "&" + param);
             }
         });
@@ -42,5 +39,4 @@ public final class ParamsBuilder {
             info.setPrev(null);
         }
     }
-
 }
