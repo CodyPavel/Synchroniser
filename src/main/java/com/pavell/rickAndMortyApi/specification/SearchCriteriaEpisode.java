@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class SearchCriteria {
-    private String key;
-    private String operation;
-    private Object value;
+public class SearchCriteriaEpisode {
+
+    private String episode;
+    private String name;
 
 }

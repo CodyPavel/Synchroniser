@@ -8,8 +8,8 @@ import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.specification.EpisodeSpecification;
-import com.pavell.rickAndMortyApi.specification.SearchCriteria;
-import com.pavell.rickAndMortyApi.utils.TimeDateUtils;
+import com.pavell.rickAndMortyApi.specification.SearchCriteriaEpisode;
+import com.pavell.rickAndMortyApi.specification.SearchCriteriaLocation;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import java.text.ParseException;
 import java.util.*;
 
+import static com.pavell.rickAndMortyApi.specification.EpisodeSpecification.findByCriteria;
 import static com.pavell.rickAndMortyApi.utils.Constants.*;
 import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
@@ -93,18 +94,21 @@ public class EpisodeService {
         return episodes;
     }
 
-    public PageResponse getFilteredPage(String air_date, String name, Long page) throws ParseException {
-        Date date = air_date == null ? null : TimeDateUtils.parseDate(air_date);
-        Page<Episode> pageEntity = episodeRepo.findAll(createSpecification(date, name), PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+    public PageResponse getFilteredPage(String episode, String name, Long page) throws ParseException {
+        if (page == null) page = 1L;
+
+        Specification<Episode> specification = findByCriteria(new SearchCriteriaEpisode(episode, name));
+
+        Page<Episode> pageEntity = episodeRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
         PageResponse pageEpisode = parseToPageResponse(pageEntity);
 
         InfoResponse info = createInfoResponse(pageEntity);
 
         Map<String, String> paramsMap = new HashMap<>();
-        paramsMap.put("air_date", air_date);
+        paramsMap.put("episode", episode);
         paramsMap.put("name", name);
 
-        setRequestParamsToPrevAndNext(info,paramsMap);
+        setRequestParamsToPrevAndNext(info, paramsMap);
         pageEpisode.setInfo(info);
 
 
@@ -146,8 +150,6 @@ public class EpisodeService {
         save(episodes);
     }
 
-
-
     private void setPrevAndNextToInfo(InfoResponse info, Page<Episode> episodePage, Long page) {
         String next = null;
         String prev = null;
@@ -167,20 +169,5 @@ public class EpisodeService {
         info.setNext(next);
         info.setPrev(prev);
         isSinglePage(episodePage.getTotalPages(), info);
-    }
-
-
-    private Specification<Episode> createSpecification(Date air_date, String name) {
-        EpisodeSpecification specName = new EpisodeSpecification(new SearchCriteria("name", ";", name));
-        EpisodeSpecification specAirDate = new EpisodeSpecification(new SearchCriteria("air_date", ";", air_date));
-        Specification<Episode> specification = null;
-        if (name != null && air_date != null) {
-            specification = specName.and(specAirDate);
-        } else if (name != null) {
-            specification = specName;
-        } else if (air_date != null) {
-            specification = specAirDate;
-        }
-        return specification;
     }
 }

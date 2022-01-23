@@ -33,10 +33,10 @@ public class EpisodeController {
     }
 
     @GetMapping("/")
-    public PageResponse getFilteredPage(@RequestParam(required = false) String air_date,
+    public PageResponse getFilteredPage(@RequestParam(required = false) String episode,
                                         @RequestParam(required = false) String name,
                                         @RequestParam(required = false) Long page) throws ParseException {
-        return episodeService.getFilteredPage(air_date, name, page);
+        return episodeService.getFilteredPage(episode, name, page);
     }
 
 }

@@ -109,13 +109,13 @@ public class LocationService {
     public PageResponse getFilteredPage(String type, String name, String dimension, Long page) {
         if (page == null) page = 1L;
         Specification<Location> specification =
-                findByCriteria(new SearchCriteriaLocation(type,name,dimension));
+                findByCriteria(new SearchCriteriaLocation(type, name, dimension));
         Page<Location> pageEntity = locationRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
 
         PageResponse pageResponse = parseToPageResponse(pageEntity);
 
         InfoResponse info = createInfoResponse(pageEntity);
-        Map<String, String> paramsMap = createParamsMap(page,name, type, dimension);
+        Map<String, String> paramsMap = createParamsMap(page, name, type, dimension);
 
         setPrevAndNextToInfoFiltered(info, pageEntity, page);
         setRequestParamsToPrevAndNext(info, paramsMap);
@@ -143,14 +143,14 @@ public class LocationService {
         if (page == null || pageEntity.getTotalPages() == page) {
             next = null;
         } else {
-            next = LOCATION_URL ;
+            next = LOCATION_URL;
         }
         if (page == null || page == 2) {
             prev = LOCATION_URL;
         } else if (page == 1) {
             prev = null;
         } else {
-            prev = LOCATION_URL ;
+            prev = LOCATION_URL;
         }
 
         info.setNext(next);
@@ -165,9 +165,9 @@ public class LocationService {
             info.setNext(null);
         }
         if (pageEntity.getTotalPages() == page || (pageEntity.getTotalPages() > page && page != 1)) {
-            info.setPrev(LOCATION_URL  );
+            info.setPrev(LOCATION_URL);
         } else if ((pageEntity.getTotalPages() + 1) == page) {
-            info.setPrev(LOCATION_URL    );
+            info.setPrev(LOCATION_URL);
         } else if (page == 2) {
             info.setPrev(LOCATION_URL);
         } else {
