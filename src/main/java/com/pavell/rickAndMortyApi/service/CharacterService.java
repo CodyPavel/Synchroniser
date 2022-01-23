@@ -13,18 +13,23 @@ import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.response.CharacterResponse;
+import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
+import com.pavell.rickAndMortyApi.utils.ParamsBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static com.pavell.rickAndMortyApi.specification.CharacterSpecification.findByCriteria;
 import static com.pavell.rickAndMortyApi.utils.Constants.*;
 import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
+import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
+import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToPrevAndNext;
 
 @Service
 public class CharacterService {
@@ -68,6 +73,85 @@ public class CharacterService {
         return pageResponse;
     }
 
+    public CharacterResponse getCharacterById(Long id) {
+        Optional<Character> optionalCharacter = characterRepo.findById(id);
+        if (optionalCharacter.isPresent()) {
+            return modelMapper.map(optionalCharacter.get(), CharacterResponse.class);
+        } else {
+            //TODO:return exception
+            return new CharacterResponse();
+        }
+    }
+
+    public List<CharacterResponse> getCharacterByIds(String[] ids) {
+        return Arrays.stream(ids)
+                .map(id -> characterRepo.findById(Long.valueOf(id)).orElseGet(null))
+                .filter(Objects::nonNull)
+                .map(character -> modelMapper.map(character, CharacterResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    public PageResponse getFilteredPage(Long page, String name, String status, String species, String gender, String type) {
+        if (page == null) page = 1L;
+        Specification<Character> specification =
+                findByCriteria(new SearchCriteriaCharacter(name,
+                        status == null ? null : CharacterStatus.valueOf(status.toUpperCase()),
+                        species,
+                        gender == null ? null : Gender.valueOf(gender.toUpperCase()),
+                        type));
+
+        Page<Character> pageEntity = characterRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+        PageResponse pageResponse = parseToPageResponse(pageEntity);
+
+        InfoResponse info = createInfoResponse(pageEntity);
+        Map<String, String> paramsMap = createParamsMap(page,name, status, species, gender, type);
+
+        setPrevAndNextToInfoFiltered(info, pageEntity, page);
+        setRequestParamsToPrevAndNext(info, paramsMap);
+
+        pageResponse.setInfo(info);
+
+        return pageResponse;
+    }
+
+    private void setPrevAndNextToInfoFiltered(InfoResponse info, Page<Character> pageEntity, Long page) {
+        String next;
+        String prev;
+        if (page == null || pageEntity.getTotalPages() == page) {
+            next = null;
+        } else {
+            next = CHARACTER_URL ;
+        }
+        if (page == null || page == 2) {
+            prev = CHARACTER_URL;
+        } else if (page == 1) {
+            prev = null;
+        } else {
+            prev = CHARACTER_URL ;
+        }
+
+        info.setNext(next);
+        info.setPrev(prev);
+
+        isSinglePage(pageEntity.getTotalPages(), info);
+        isMoreThenAllPagesFiltered(pageEntity, info, page);
+    }
+
+    private void isMoreThenAllPagesFiltered(Page<Character> pageEntity, InfoResponse info, Long page) {
+        if (pageEntity.getTotalPages() < page || pageEntity.getTotalPages() == page) {
+            info.setNext(null);
+        }
+        if (pageEntity.getTotalPages() == page || (pageEntity.getTotalPages() > page && page != 1)) {
+            info.setPrev(CHARACTER_URL  );
+        } else if ((pageEntity.getTotalPages() + 1) == page) {
+            info.setPrev(CHARACTER_URL    );
+        } else if (page == 2) {
+            info.setPrev(CHARACTER_URL);
+        } else {
+            info.setPrev(null);
+        }
+    }
+
     private void setPrevAndNextToInfo(InfoResponse info, Page<Character> characterPage, Long page) {
         String next;
         String prev;
@@ -87,7 +171,7 @@ public class CharacterService {
         info.setNext(next);
         info.setPrev(prev);
 
-        isSinglePage(characterPage, info);
+        isSinglePage(characterPage.getTotalPages(), info);
         isMoreThenAllPages(characterPage, info, page);
     }
 
@@ -106,13 +190,6 @@ public class CharacterService {
         }
     }
 
-    private void isSinglePage(Page<Character> characterPage, InfoResponse info) {
-        if (characterPage.getTotalPages() == 1 || characterPage.getTotalPages() == 0) {
-            info.setNext(null);
-            info.setPrev(null);
-        }
-    }
-
     private PageResponse parseToPageResponse(Page<Character> page) {
         List<CharacterResponse> charResponseList = new ArrayList<>();
         page.get().forEach(character -> {
@@ -126,6 +203,18 @@ public class CharacterService {
         pageResponse.setResults(charResponseList);
 
         return pageResponse;
+    }
+
+    private HashMap<String, String> createParamsMap(Long page,String name, String status, String species, String gender, String type) {
+        HashMap<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("page", page.toString());
+        paramsMap.put("name", name);
+        paramsMap.put("status", status);
+        paramsMap.put("species", species);
+        paramsMap.put("gender", gender);
+        paramsMap.put("type", type);
+
+        return paramsMap;
     }
 
     public void loadData(RestTemplate restTemplate) {
