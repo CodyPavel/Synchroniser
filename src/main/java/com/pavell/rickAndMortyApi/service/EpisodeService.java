@@ -10,7 +10,6 @@ import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.specification.EpisodeSpecification;
 import com.pavell.rickAndMortyApi.specification.SearchCriteria;
 import com.pavell.rickAndMortyApi.utils.TimeDateUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +19,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.pavell.rickAndMortyApi.utils.Constants.*;
 import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
@@ -63,7 +61,7 @@ public class EpisodeService {
         if (page == null) page = 1L;
         Page<Episode> episodePage = episodeRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
 
-        PageResponse pageResponse = parseToPageEpisode(episodePage);
+        PageResponse pageResponse = parseToPageResponse(episodePage);
 
         InfoResponse info = createInfoResponse(episodePage);
         setPrevAndNextToInfo(info, episodePage, page);
@@ -98,7 +96,7 @@ public class EpisodeService {
     public PageResponse getFilteredPage(String air_date, String name, Long page) throws ParseException {
         Date date = air_date == null ? null : TimeDateUtils.parseDate(air_date);
         Page<Episode> pageEntity = episodeRepo.findAll(createSpecification(date, name), PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
-        PageResponse pageEpisode = parseToPageEpisode(pageEntity);
+        PageResponse pageEpisode = parseToPageResponse(pageEntity);
 
         InfoResponse info = createInfoResponse(pageEntity);
 
@@ -113,7 +111,7 @@ public class EpisodeService {
         return pageEpisode;
     }
 
-    private PageResponse parseToPageEpisode(Page<Episode> page) {
+    private PageResponse parseToPageResponse(Page<Episode> page) {
         List<EpisodeResponse> resultList = new ArrayList<>();
         page.get().forEach(episode -> resultList.add(modelMapper.map(episode, EpisodeResponse.class)));
 
