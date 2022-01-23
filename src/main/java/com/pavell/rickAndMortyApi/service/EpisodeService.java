@@ -24,6 +24,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.pavell.rickAndMortyApi.utils.Constants.*;
 import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
+import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
+import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToPrevAndNext;
 
 @Service
 public class EpisodeService {
@@ -100,12 +102,13 @@ public class EpisodeService {
 
         InfoResponse info = createInfoResponse(pageEntity);
 
-        Map<String, String> map = new HashMap<>();
-        map.put("air_date", air_date);
-        map.put("name", name);
+        Map<String, String> paramsMap = new HashMap<>();
+        paramsMap.put("air_date", air_date);
+        paramsMap.put("name", name);
 
-        setPrevAndNextToInfoWithRequestParams(info, pageEntity, page, map);
+        setRequestParamsToPrevAndNext(info,paramsMap);
         pageEpisode.setInfo(info);
+
 
         return pageEpisode;
     }
@@ -165,38 +168,9 @@ public class EpisodeService {
 
         info.setNext(next);
         info.setPrev(prev);
-        isSinglePage(episodePage, info);
+        isSinglePage(episodePage.getTotalPages(), info);
     }
 
-    private void setPrevAndNextToInfoWithRequestParams(InfoResponse info, Page<Episode> episodePage, Long page, Map<String, String> params) {
-        setPrevAndNextToInfo(info, episodePage, page);
-        String next;
-        String prev;
-        AtomicReference<String> allParams = new AtomicReference<>(StringUtils.EMPTY);
-        params.forEach((key, value) -> {
-            String param = key + "=" + value;
-            if (StringUtils.EMPTY.equalsIgnoreCase(allParams.get())) {
-                allParams.set("/?" + param);
-            }
-            allParams.set(allParams + "&" + param);
-        });
-
-        if (info.getNext() != null) {
-            info.setNext(info.getNext() + allParams);
-        }
-
-        if (info.getPrev() != null) {
-            info.setPrev(info.getPrev() + allParams);
-        }
-        isSinglePage(episodePage, info);
-    }
-
-    private void isSinglePage(Page<Episode> episodePage, InfoResponse info) {
-        if (episodePage.getTotalPages() == 1 || episodePage.getTotalPages() == 0) {
-            info.setNext(null);
-            info.setPrev(null);
-        }
-    }
 
     private Specification<Episode> createSpecification(Date air_date, String name) {
         EpisodeSpecification specName = new EpisodeSpecification(new SearchCriteria("name", ";", name));

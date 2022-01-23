@@ -26,6 +26,7 @@ public class EpisodeController {
         return episodeService.getEpisodeById(id);
     }
 
+    //TODO:Check this annotation @ApiParam(defaultValue = "[]")
     @GetMapping(value = {"/multiple/{ids}"})
     public List<EpisodeResponse> getEpisodes(@PathVariable String[] ids) {
         return episodeService.getEpisodesByIds(ids);
@@ -33,10 +34,9 @@ public class EpisodeController {
 
     @GetMapping("/")
     public PageResponse getFilteredPage(@RequestParam(required = false) String air_date,
-                                                  @RequestParam(required = false) String name,
-                                                  @RequestParam(required = false) Long page) throws ParseException {
-        PageResponse pageEpisode = episodeService.getFilteredPage(air_date, name, page);
-        return pageEpisode;
+                                        @RequestParam(required = false) String name,
+                                        @RequestParam(required = false) Long page) throws ParseException {
+        return episodeService.getFilteredPage(air_date, name, page);
     }
 
 }
