@@ -1,8 +1,6 @@
 package com.pavell.rickAndMortyApi.service;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.character.CharacterDTO;
 import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
 import com.pavell.rickAndMortyApi.entity.Character;
@@ -18,6 +16,7 @@ import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -46,24 +45,13 @@ public class CharacterService {
 
     private EpisodeRepo episodeRepo;
 
-    private LocationService locationService;
-
-    private LoadingCache<String, Location> locationCache =
-            CacheBuilder.newBuilder()
-                    .maximumSize(200)
-                    .build(new CacheLoader<String, Location>() {
-                        @Override
-                        public Location load(String locationName) throws Exception {
-                            Optional<Location> optionalLocation = locationRepo.findByName(locationName);
-                            return optionalLocation.orElse(null);
-                        }
-                    });
+    @Autowired
+    private LocationCache locationCache;
 
     public CharacterService(CharacterRepo characterRepo, LocationRepo locationRepo, EpisodeRepo episodeRepo) {
         this.locationRepo = locationRepo;
         this.characterRepo = characterRepo;
         this.episodeRepo = episodeRepo;
-
     }
 
     public Iterable<Character> list() {
@@ -260,10 +248,10 @@ public class CharacterService {
                 Location origin = null;
                 try {
                     if (!"unknown".equalsIgnoreCase(character.getLocation().getName())) {
-                        location = locationCache.get(character.getLocation().getName());
+                        location = locationCache.getByName(character.getLocation().getName());
                     }
                     if (!"unknown".equalsIgnoreCase(character.getOrigin().getName())) {
-                        origin = locationCache.get(character.getOrigin().getName());
+                        origin = locationCache.getByName(character.getOrigin().getName());
                     }
                 } catch (ExecutionException e) {
                     e.printStackTrace();
