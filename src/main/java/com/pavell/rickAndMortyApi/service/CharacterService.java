@@ -1,5 +1,6 @@
 package com.pavell.rickAndMortyApi.service;
 
+import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.character.CharacterDTO;
 import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
 import com.pavell.rickAndMortyApi.entity.Character;
@@ -10,12 +11,12 @@ import com.pavell.rickAndMortyApi.enums.Gender;
 import com.pavell.rickAndMortyApi.repo.CharacterRepo;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
+import com.pavell.rickAndMortyApi.response.CharacterResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
-import com.pavell.rickAndMortyApi.response.CharacterResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
-import com.pavell.rickAndMortyApi.utils.ParamsBuilder;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.pavell.rickAndMortyApi.specification.CharacterSpecification.findByCriteria;
@@ -42,6 +44,9 @@ public class CharacterService {
     private LocationRepo locationRepo;
 
     private EpisodeRepo episodeRepo;
+
+    @Autowired
+    private LocationCache locationCache;
 
     public CharacterService(CharacterRepo characterRepo, LocationRepo locationRepo, EpisodeRepo episodeRepo) {
         this.locationRepo = locationRepo;
@@ -104,7 +109,7 @@ public class CharacterService {
         PageResponse pageResponse = parseToPageResponse(pageEntity);
 
         InfoResponse info = createInfoResponse(pageEntity);
-        Map<String, String> paramsMap = createParamsMap(page,name, status, species, gender, type);
+        Map<String, String> paramsMap = createParamsMap(page, name, status, species, gender, type);
 
         setPrevAndNextToInfoFiltered(info, pageEntity, page);
         setRequestParamsToPrevAndNext(info, paramsMap);
@@ -120,14 +125,14 @@ public class CharacterService {
         if (page == null || pageEntity.getTotalPages() == page) {
             next = null;
         } else {
-            next = CHARACTER_URL ;
+            next = CHARACTER_URL;
         }
         if (page == null || page == 2) {
             prev = CHARACTER_URL;
         } else if (page == 1) {
             prev = null;
         } else {
-            prev = CHARACTER_URL ;
+            prev = CHARACTER_URL;
         }
 
         info.setNext(next);
@@ -142,9 +147,9 @@ public class CharacterService {
             info.setNext(null);
         }
         if (pageEntity.getTotalPages() == page || (pageEntity.getTotalPages() > page && page != 1)) {
-            info.setPrev(CHARACTER_URL  );
+            info.setPrev(CHARACTER_URL);
         } else if ((pageEntity.getTotalPages() + 1) == page) {
-            info.setPrev(CHARACTER_URL    );
+            info.setPrev(CHARACTER_URL);
         } else if (page == 2) {
             info.setPrev(CHARACTER_URL);
         } else {
@@ -205,7 +210,7 @@ public class CharacterService {
         return pageResponse;
     }
 
-    private HashMap<String, String> createParamsMap(Long page,String name, String status, String species, String gender, String type) {
+    private HashMap<String, String> createParamsMap(Long page, String name, String status, String species, String gender, String type) {
         HashMap<String, String> paramsMap = new HashMap<>();
         paramsMap.put("page", page.toString());
         paramsMap.put("name", name);
@@ -230,7 +235,7 @@ public class CharacterService {
             }
         }
 
-
+        ArrayList<Character> characters = new ArrayList<>();
         pageCharacterList.forEach(pageCharacterElement -> {
             List<CharacterDTO> results = pageCharacterElement.getResults();
             results.forEach(result -> {
@@ -239,17 +244,30 @@ public class CharacterService {
                 character.setStatus(CharacterStatus.valueOf(result.getStatus().toUpperCase()));
                 character.setGender(Gender.valueOf(result.getGender().toUpperCase()));
 
-                Optional<Location> location = locationRepo.findByName(character.getLocation().getName());
-                Optional<Location> origin = locationRepo.findByName(character.getOrigin().getName());
+                Location location = null;
+                Location origin = null;
+                try {
+                    if (!"unknown".equalsIgnoreCase(character.getLocation().getName())) {
+                        location = locationCache.getByName(character.getLocation().getName());
+                    }
+                    if (!"unknown".equalsIgnoreCase(character.getOrigin().getName())) {
+                        origin = locationCache.getByName(character.getOrigin().getName());
+                    }
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
 
-                if (!origin.isPresent()) {
+                if (origin == null) {
                     character.setOrigin(null);
+                } else {
+                    character.setOrigin(origin);
                 }
-                if (!location.isPresent()) {
+
+                if (location == null) {
                     character.setLocation(null);
+                } else {
+                    character.setLocation(location);
                 }
-                origin.ifPresent(character::setOrigin);
-                location.ifPresent(character::setLocation);
 
                 List<Episode> episodeList = new ArrayList<>();
                 result.getEpisode().forEach(episode -> {
@@ -258,9 +276,9 @@ public class CharacterService {
                 });
                 character.setEpisode(episodeList);
 
-
-                save(character);
+                characters.add(character);
             });
         });
+        characterRepo.saveAll(characters);
     }
 }

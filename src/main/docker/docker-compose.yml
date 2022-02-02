@@ -2,7 +2,7 @@ version: '3'
 
 services:
   PostgreSQLAdmin:
-    container_name: db
+    container_name: postgres_db
     restart: always
     image: postgres:11.6-alpine
     ports:
@@ -10,4 +10,4 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: dbmsys_admin
+      POSTGRES_DB: rick_and_morty
