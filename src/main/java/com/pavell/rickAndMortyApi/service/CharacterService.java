@@ -54,16 +54,14 @@ public class CharacterService {
         this.episodeRepo = episodeRepo;
     }
 
-    public Iterable<Character> list() {
-        return characterRepo.findAll();
-    }
-
     public Character save(Character character) {
         return characterRepo.save(character);
     }
 
-    public void save(List<Character> character) {
-        characterRepo.saveAll(character);
+    public List<Character> saveAll(List<Character> character) {
+        List<Character> characterList = new ArrayList<>();
+        characterRepo.saveAll(character).forEach(characterList::add);
+        return characterList ;
     }
 
     public PageResponse getPage(Long page) {
