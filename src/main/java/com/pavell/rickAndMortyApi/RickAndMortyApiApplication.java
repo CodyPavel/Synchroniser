@@ -30,7 +30,7 @@ public class RickAndMortyApiApplication {
         return args -> {
             locationService.loadData(restTemplate);
             episodeService.loadData(restTemplate);
-            characterService.loadData(restTemplate);
+            characterService.loadData();
         };
 
 

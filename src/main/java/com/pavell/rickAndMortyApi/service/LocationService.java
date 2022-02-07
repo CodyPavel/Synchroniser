@@ -1,5 +1,9 @@
 package com.pavell.rickAndMortyApi.service;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.location.LocationDTO;
 import com.pavell.rickAndMortyApi.dto.location.PageLocation;
 import com.pavell.rickAndMortyApi.entity.Location;
@@ -9,6 +13,7 @@ import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaLocation;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -16,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.pavell.rickAndMortyApi.specification.LocationSpecification.findByCriteria;
@@ -30,6 +36,9 @@ public class LocationService {
     private ModelMapper modelMapper = new ModelMapper();
 
     private LocationRepo locationRepo;
+
+    @Autowired
+    private LocationCache locationCache;
 
     public LocationService(LocationRepo locationRepo) {
         this.locationRepo = locationRepo;

@@ -20,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -45,13 +47,20 @@ public class CharacterService {
 
     private EpisodeRepo episodeRepo;
 
-    @Autowired
+    private RestTemplate restTemplate;
+
     private LocationCache locationCache;
 
-    public CharacterService(CharacterRepo characterRepo, LocationRepo locationRepo, EpisodeRepo episodeRepo) {
+    public CharacterService(CharacterRepo characterRepo,
+                            LocationRepo locationRepo,
+                            EpisodeRepo episodeRepo,
+                            RestTemplate restTemplate,
+                            LocationCache locationCache) {
         this.locationRepo = locationRepo;
         this.characterRepo = characterRepo;
         this.episodeRepo = episodeRepo;
+        this.restTemplate = restTemplate;
+        this.locationCache = locationCache;
     }
 
     public Character save(Character character) {
@@ -61,7 +70,7 @@ public class CharacterService {
     public List<Character> saveAll(List<Character> character) {
         List<Character> characterList = new ArrayList<>();
         characterRepo.saveAll(character).forEach(characterList::add);
-        return characterList ;
+        return characterList;
     }
 
     public PageResponse getPage(Long page) {
@@ -81,9 +90,9 @@ public class CharacterService {
         if (optionalCharacter.isPresent()) {
             return modelMapper.map(optionalCharacter.get(), CharacterResponse.class);
         } else {
-            //TODO:return exception
-            return new CharacterResponse();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + id);
         }
+
     }
 
     public List<CharacterResponse> getCharacterByIds(String[] ids) {
@@ -220,14 +229,16 @@ public class CharacterService {
         return paramsMap;
     }
 
-    public void loadData(RestTemplate restTemplate) {
+    public void loadData() {
         PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
         while (true) {
             pageCharacterList.add(pageCharacter);
             pageCharacter = restTemplate.getForObject(pageCharacter.getInfo().getNext(), PageCharacter.class);
-            if (pageCharacter.getInfo().getNext() == null) {
+            if (pageCharacter == null || pageCharacter.getInfo() == null) {
+                break;
+            } else if (pageCharacter.getInfo().getNext() == null) {
                 pageCharacterList.add(pageCharacter);
                 break;
             }
