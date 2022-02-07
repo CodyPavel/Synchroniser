@@ -29,6 +29,8 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToP
 @Service
 public class EpisodeService {
 
+    //TODO guava cache service
+
     private ModelMapper modelMapper = new ModelMapper();
 
     private EpisodeRepo episodeRepo;

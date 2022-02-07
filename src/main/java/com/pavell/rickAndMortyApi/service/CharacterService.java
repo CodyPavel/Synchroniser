@@ -47,13 +47,20 @@ public class CharacterService {
 
     private EpisodeRepo episodeRepo;
 
-    @Autowired
+    private RestTemplate restTemplate;
+
     private LocationCache locationCache;
 
-    public CharacterService(CharacterRepo characterRepo, LocationRepo locationRepo, EpisodeRepo episodeRepo) {
+    public CharacterService(CharacterRepo characterRepo,
+                            LocationRepo locationRepo,
+                            EpisodeRepo episodeRepo,
+                            RestTemplate restTemplate,
+                            LocationCache locationCache) {
         this.locationRepo = locationRepo;
         this.characterRepo = characterRepo;
         this.episodeRepo = episodeRepo;
+        this.restTemplate = restTemplate;
+        this.locationCache = locationCache;
     }
 
     public Character save(Character character) {
@@ -222,14 +229,16 @@ public class CharacterService {
         return paramsMap;
     }
 
-    public void loadData(RestTemplate restTemplate) {
+    public void loadData() {
         PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
         while (true) {
             pageCharacterList.add(pageCharacter);
             pageCharacter = restTemplate.getForObject(pageCharacter.getInfo().getNext(), PageCharacter.class);
-            if (pageCharacter.getInfo().getNext() == null) {
+            if (pageCharacter == null || pageCharacter.getInfo() == null) {
+                break;
+            } else if (pageCharacter.getInfo().getNext() == null) {
                 pageCharacterList.add(pageCharacter);
                 break;
             }
