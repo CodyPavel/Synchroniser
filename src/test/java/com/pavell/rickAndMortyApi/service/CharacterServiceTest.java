@@ -20,12 +20,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -87,7 +90,53 @@ class CharacterServiceTest {
         assertEquals("http://localhost:8080/api/location/1", ((CharacterResponse) pageResponse.getResults().get(0)).getLocation().getUrl());
         assertEquals("http://localhost:8080/api/character/1", ((CharacterResponse) pageResponse.getResults().get(0)).getUrl());
     }
-    
+
+
+    @Test
+    public void shouldGetCharacterById() {
+        Optional<Character> character = Optional.of(getCharacterList().get(0));
+        when(characterRepo.findById(eq(1L))).thenReturn(character);
+
+        CharacterResponse characterResponse = characterService.getCharacterById(1L);
+
+        verify(characterRepo, times(1)).findById(eq(1L));
+
+        assertEquals("http://localhost:8080/api/character/1", characterResponse.getUrl());
+        assertEquals("http://localhost:8080/api/episode/1", characterResponse.getEpisode().get(0));
+        assertEquals("http://localhost:8080/api/location/1", characterResponse.getLocation().getUrl());
+        assertEquals("Test char name", characterResponse.getName());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhileGettingCharacterById() {
+        Optional<Character> character = Optional.empty();
+        when(characterRepo.findById(eq(1L))).thenReturn(character);
+
+
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> characterService.getCharacterById(1L));
+        verify(characterRepo, times(1)).findById(eq(1L));
+
+        assertEquals("404 NOT_FOUND \"User not found with id: 1\"", exception.getMessage());
+    }
+
+    @Test
+    public void shouldGetCharacterByIds() {
+        Optional<Character> character1 = Optional.of(getCharacterList().get(0));
+        Optional<Character> character2 = Optional.of(getCharacterList().get(1));
+        when(characterRepo.findById(eq(1L))).thenReturn(character1);
+        when(characterRepo.findById(eq(2L))).thenReturn(character2);
+
+        CharacterResponse characterResponse = characterService.getCharacterById(1L);
+
+        String[] strArray = new String[]{"1", "2"};
+        List<CharacterResponse> responseList = characterService.getCharacterByIds(strArray);
+
+
+        verify(characterRepo, times(1)).findById(eq(1L));
+        verify(characterRepo, times(1)).findById(eq(2L));
+    }
+
 
     private List<Character> getCharacterList() {
         List<Character> characterList = new ArrayList<>();
