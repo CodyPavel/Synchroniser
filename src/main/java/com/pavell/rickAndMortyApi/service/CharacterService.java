@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -229,7 +230,7 @@ public class CharacterService {
         return paramsMap;
     }
 
-    public void loadData() {
+    public void loadData() throws IOException {
         PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();

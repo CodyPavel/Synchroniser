@@ -37,6 +37,7 @@ public class LocationService {
 
     private LocationRepo locationRepo;
 
+    //TODO: Get all location from cache
     @Autowired
     private LocationCache locationCache;
 
