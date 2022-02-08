@@ -1,6 +1,8 @@
 
 package com.pavell.rickAndMortyApi.dto.character;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.annotation.Generated;
@@ -12,6 +14,7 @@ import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 public class CharacterDTO {
 
     private LocalDateTime created;
+
     private List<String> episode;
     private String gender;
     private String image;
@@ -23,13 +26,14 @@ public class CharacterDTO {
     private String type;
     private String url;
 
+    public void setCreated(String created) {
+        this.created = parseDateTime(created);
+    }
+
     public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(String created) {
-        this.created = parseDateTime(created);
-    }
 
     public List<String> getEpisode() {
         return episode;

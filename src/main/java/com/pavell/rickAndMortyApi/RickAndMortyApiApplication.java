@@ -3,6 +3,7 @@ package com.pavell.rickAndMortyApi;
 import com.pavell.rickAndMortyApi.service.CharacterService;
 import com.pavell.rickAndMortyApi.service.EpisodeService;
 import com.pavell.rickAndMortyApi.service.LocationService;
+import com.pavell.rickAndMortyApi.еуые.MyThred;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -32,6 +33,9 @@ public class RickAndMortyApiApplication {
             episodeService.loadData(restTemplate);
             characterService.loadData();
         };
+
+
+
 
 
     }
