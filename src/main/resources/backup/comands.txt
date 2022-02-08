@@ -1,0 +1,3 @@
+docker exec -i postgres_db /bin/bash -c "PGPASSWORD=password pg_dump --username user rick_and_morty " > /home/user1/IdeaProjects/Synchroniser/src/main/resources/backup/dump.sql
+
+docker exec -i postgres_db /bin/bash -c "PGPASSWORD=password psql --username user rick_and_morty " < /home/user1/IdeaProjects/Synchroniser/src/main/resources/backup/dump.sql
