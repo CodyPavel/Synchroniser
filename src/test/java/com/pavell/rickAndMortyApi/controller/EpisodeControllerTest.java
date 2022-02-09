@@ -20,6 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.pavell.rickAndMortyApi.utils.Constants.SLASH;
@@ -142,7 +143,6 @@ class EpisodeControllerTest {
         //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"test/url\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"Name\""));
-
 
         verify(episodeService, times(1)).getFilteredPage(eq("episode"), eq("name"), eq(1L));
     }

@@ -1,5 +1,6 @@
 package com.pavell.rickAndMortyApi.service;
 
+import com.pavell.rickAndMortyApi.backup.BackupService;
 import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.character.CharacterDTO;
 import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
@@ -15,8 +16,8 @@ import com.pavell.rickAndMortyApi.response.CharacterResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
+import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -26,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -38,6 +40,7 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToP
 
 @Service
 public class CharacterService {
+    final static Logger LOGGER = Logger.getLogger(CharacterService.class);
 
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -52,16 +55,20 @@ public class CharacterService {
 
     private LocationCache locationCache;
 
+    private BackupService backupService;
+
     public CharacterService(CharacterRepo characterRepo,
                             LocationRepo locationRepo,
                             EpisodeRepo episodeRepo,
                             RestTemplate restTemplate,
-                            LocationCache locationCache) {
+                            LocationCache locationCache,
+                            BackupService backupService) {
         this.locationRepo = locationRepo;
         this.characterRepo = characterRepo;
         this.episodeRepo = episodeRepo;
         this.restTemplate = restTemplate;
         this.locationCache = locationCache;
+        this.backupService = backupService;
     }
 
     public Character save(Character character) {
@@ -71,12 +78,14 @@ public class CharacterService {
     public List<Character> saveAll(List<Character> character) {
         List<Character> characterList = new ArrayList<>();
         characterRepo.saveAll(character).forEach(characterList::add);
+        LOGGER.info(CharacterService.class.getName() + " saved all characters ");
         return characterList;
     }
 
     public PageResponse getPage(Long page) {
         if (page == null) page = 1L;
         Page<Character> characterPage = characterRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
+        LOGGER.info(CharacterService.class.getName() + " find all characters by page: " + page);
 
         PageResponse pageResponse = parseToPageResponse(characterPage);
         InfoResponse info = createInfoResponse(characterPage);
@@ -89,19 +98,24 @@ public class CharacterService {
     public CharacterResponse getCharacterById(Long id) {
         Optional<Character> optionalCharacter = characterRepo.findById(id);
         if (optionalCharacter.isPresent()) {
+            LOGGER.info(CharacterService.class.getName() + " got character with id id:");
             return modelMapper.map(optionalCharacter.get(), CharacterResponse.class);
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with id: " + id);
+            LOGGER.error(CharacterService.class.getName() + "Character not found with id: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Character not found with id: " + id);
         }
 
     }
 
     public List<CharacterResponse> getCharacterByIds(String[] ids) {
+        LOGGER.info(CharacterService.class.getName() + " got characters with ids: " + Arrays.toString(ids));
+
         return Arrays.stream(ids)
                 .map(id -> characterRepo.findById(Long.valueOf(id)).orElseGet(null))
                 .filter(Objects::nonNull)
                 .map(character -> modelMapper.map(character, CharacterResponse.class))
                 .collect(Collectors.toList());
+
     }
 
     public PageResponse getFilteredPage(Long page, String name, String status, String species, String gender, String type) {
@@ -114,6 +128,14 @@ public class CharacterService {
                         type));
 
         Page<Character> pageEntity = characterRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+        LOGGER.info(CharacterService.class.getName() + " got characters by page: " + page +
+                " and search criteria params" +
+                " name=" + name +
+                " status=" + status +
+                " species=" + species +
+                " gender=" + gender +
+                " type=" + type);
+
         PageResponse pageResponse = parseToPageResponse(pageEntity);
 
         InfoResponse info = createInfoResponse(pageEntity);
@@ -230,13 +252,23 @@ public class CharacterService {
         return paramsMap;
     }
 
-    public void loadData() throws IOException {
+    public void loadData() {
         PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
+        LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_CHARACTER_URL);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
         while (true) {
             pageCharacterList.add(pageCharacter);
             pageCharacter = restTemplate.getForObject(pageCharacter.getInfo().getNext(), PageCharacter.class);
+            if (Objects.isNull(pageCharacter) ||
+                    Objects.isNull(pageCharacter.getInfo()) ||
+                    Objects.isNull(pageCharacter.getInfo().getNext())) {
+                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url null");
+            } else {
+                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + pageCharacter.getInfo().getNext());
+
+            }
+
             if (pageCharacter == null || pageCharacter.getInfo() == null) {
                 break;
             } else if (pageCharacter.getInfo().getNext() == null) {
@@ -259,9 +291,13 @@ public class CharacterService {
                 try {
                     if (!"unknown".equalsIgnoreCase(character.getLocation().getName())) {
                         location = locationCache.getByName(character.getLocation().getName());
+                        LOGGER.info(CharacterService.class.getName() + " got location from cache with name " + character.getLocation().getName());
+
                     }
                     if (!"unknown".equalsIgnoreCase(character.getOrigin().getName())) {
                         origin = locationCache.getByName(character.getOrigin().getName());
+                        LOGGER.info(CharacterService.class.getName() + " got location(as origin) from cache with name " + character.getOrigin().getName());
+
                     }
                 } catch (ExecutionException e) {
                     e.printStackTrace();
@@ -290,5 +326,9 @@ public class CharacterService {
             });
         });
         characterRepo.saveAll(characters);
+        LOGGER.info(CharacterService.class.getName() + " saved all characters with names " +
+                characters.stream().map(Character::getName).collect(Collectors.joining(", ")));
+
+
     }
 }
