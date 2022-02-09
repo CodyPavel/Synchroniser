@@ -1,5 +1,6 @@
 package com.pavell.rickAndMortyApi.service;
 
+import com.pavell.rickAndMortyApi.backup.BackupService;
 import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.character.CharacterDTO;
 import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
@@ -26,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -53,16 +55,20 @@ public class CharacterService {
 
     private LocationCache locationCache;
 
+    private BackupService backupService;
+
     public CharacterService(CharacterRepo characterRepo,
                             LocationRepo locationRepo,
                             EpisodeRepo episodeRepo,
                             RestTemplate restTemplate,
-                            LocationCache locationCache) {
+                            LocationCache locationCache,
+                            BackupService backupService) {
         this.locationRepo = locationRepo;
         this.characterRepo = characterRepo;
         this.episodeRepo = episodeRepo;
         this.restTemplate = restTemplate;
         this.locationCache = locationCache;
+        this.backupService = backupService;
     }
 
     public Character save(Character character) {
@@ -246,7 +252,7 @@ public class CharacterService {
         return paramsMap;
     }
 
-    public void loadData() throws IOException {
+    public void loadData() {
         PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
         LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_CHARACTER_URL);
 
