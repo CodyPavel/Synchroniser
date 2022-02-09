@@ -4,12 +4,11 @@ import com.pavell.rickAndMortyApi.dto.episode.EpisodeDTO;
 import com.pavell.rickAndMortyApi.dto.episode.PageEpisode;
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
+import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
-import com.pavell.rickAndMortyApi.response.EpisodeResponse;
-import com.pavell.rickAndMortyApi.specification.EpisodeSpecification;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaEpisode;
-import com.pavell.rickAndMortyApi.specification.SearchCriteriaLocation;
+import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.pavell.rickAndMortyApi.specification.EpisodeSpecification.findByCriteria;
 import static com.pavell.rickAndMortyApi.utils.Constants.*;
@@ -28,6 +28,7 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToP
 
 @Service
 public class EpisodeService {
+    final static Logger LOGGER = Logger.getLogger(EpisodeService.class);
 
     //TODO guava cache service
 
@@ -40,11 +41,14 @@ public class EpisodeService {
         for (Episode episode : episodeRepo.findAll()) {
             episodes.add(episode);
         }
+        LOGGER.info(EpisodeService.class.getName() + " got all episodes ");
+
 
         return episodes;
     }
 
     public Episode getById(Long id) {
+        LOGGER.info(EpisodeService.class.getName() + " got episode with id: " + id);
         return episodeRepo.findById(id).orElseThrow(NoSuchElementException::new);
     }
 
@@ -53,16 +57,21 @@ public class EpisodeService {
     }
 
     public Episode save(Episode episode) {
+        LOGGER.info(EpisodeService.class.getName() + " saved episode with name: " + episode.getName());
         return episodeRepo.save(episode);
     }
 
     public void save(List<Episode> episodes) {
         episodeRepo.saveAll(episodes);
+        LOGGER.info(EpisodeService.class.getName() + " saved all episodes " +
+                episodes.stream().map(Episode::getName).collect(Collectors.joining(", ")));
     }
 
     public PageResponse getPage(Long page) {
         if (page == null) page = 1L;
         Page<Episode> episodePage = episodeRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
+        LOGGER.info(EpisodeService.class.getName() + " got episode page : " + page);
+
 
         PageResponse pageResponse = parseToPageResponse(episodePage);
 
@@ -76,6 +85,8 @@ public class EpisodeService {
     public EpisodeResponse getEpisodeById(Long id) {
 
         Optional<Episode> optionalEpisode = episodeRepo.findById(id);
+        LOGGER.info(EpisodeService.class.getName() + " got episode with id : " + id);
+
         if (optionalEpisode.isPresent()) {
             return modelMapper.map(optionalEpisode.get(), EpisodeResponse.class);
         } else {
@@ -92,6 +103,7 @@ public class EpisodeService {
                     optionalEpisode.ifPresent(episode -> episodes.add(modelMapper.map(episode, EpisodeResponse.class)));
                 }
         );
+        LOGGER.info(EpisodeService.class.getName() + " got episodes with ids : " + Arrays.toString(ids));
 
         return episodes;
     }
@@ -102,6 +114,11 @@ public class EpisodeService {
         Specification<Episode> specification = findByCriteria(new SearchCriteriaEpisode(episode, name));
 
         Page<Episode> pageEntity = episodeRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+        LOGGER.info(EpisodeService.class.getName() + " got episode by page: " + page +
+                " and search criteria params" +
+                " name=" + name +
+                " episode=" + episode);
+
         PageResponse pageEpisode = parseToPageResponse(pageEntity);
 
         InfoResponse info = createInfoResponse(pageEntity);
@@ -129,11 +146,20 @@ public class EpisodeService {
 
     public void loadData(RestTemplate restTemplate) {
         PageEpisode pageEpisode = restTemplate.getForObject(RESOURCE_EPISODE_URL, PageEpisode.class);
+        LOGGER.info(EpisodeService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_EPISODE_URL);
 
         List<PageEpisode> pageEpisodeList = new ArrayList<>();
         while (true) {
             pageEpisodeList.add(pageEpisode);
             pageEpisode = restTemplate.getForObject(pageEpisode.getInfo().getNext(), PageEpisode.class);
+            if (Objects.isNull(pageEpisode) ||
+                    Objects.isNull(pageEpisode.getInfo()) ||
+                    Objects.isNull(pageEpisode.getInfo().getNext())) {
+                LOGGER.info(EpisodeService.class.getName() + " RestTemplate getForObject  with url null");
+            } else {
+                LOGGER.info(EpisodeService.class.getName() + " RestTemplate getForObject  with url " + pageEpisode.getInfo().getNext());
+
+            }
             if (pageEpisode.getInfo().getNext() == null) {
                 pageEpisodeList.add(pageEpisode);
                 break;

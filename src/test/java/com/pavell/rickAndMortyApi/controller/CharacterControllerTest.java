@@ -21,6 +21,10 @@ import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.pavell.rickAndMortyApi.utils.Constants.SLASH;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -50,6 +54,15 @@ class CharacterControllerTest {
 
     @Test
     public void shouldGetPage() throws Exception {
+
+        Stream.of(1, 3, 4, 3, 4, 3, 2, 3, 3, 3, 3, 3)
+                .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .ifPresent(System.out::println);
+
+
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("page", "1");
 

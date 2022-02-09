@@ -1,8 +1,5 @@
 package com.pavell.rickAndMortyApi.service;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.location.LocationDTO;
 import com.pavell.rickAndMortyApi.dto.location.PageLocation;
@@ -12,6 +9,7 @@ import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaLocation;
+import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.pavell.rickAndMortyApi.specification.LocationSpecification.findByCriteria;
@@ -32,6 +29,8 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToP
 
 @Service
 public class LocationService {
+    final static Logger LOGGER = Logger.getLogger(LocationService.class);
+
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -46,28 +45,37 @@ public class LocationService {
     }
 
     public Iterable<Location> list() {
+        LOGGER.info(LocationService.class.getName() + " got all episodes ");
         return locationRepo.findAll();
     }
 
     public Location save(Location location) {
+        LOGGER.info(LocationService.class.getName() + " saved episode with name " + location.getName());
         return locationRepo.save(location);
     }
 
     public void save(List<Location> locations) {
+        LOGGER.info(LocationService.class.getName() + " saved all episodes");
         locationRepo.saveAll(locations);
     }
 
-    public Long getMaxId() {
-        return locationRepo.getMaxId();
-    }
 
     public void loadData(RestTemplate restTemplate) {
         PageLocation pageLocation = restTemplate.getForObject(RESOURCE_LOCATION_URL, PageLocation.class);
+        LOGGER.info(LocationService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_LOCATION_URL);
 
         List<PageLocation> pageLocationList = new ArrayList<>();
         while (true) {
             pageLocationList.add(pageLocation);
             pageLocation = restTemplate.getForObject(pageLocation.getInfo().getNext(), PageLocation.class);
+            if (Objects.isNull(pageLocation) ||
+                    Objects.isNull(pageLocation.getInfo()) ||
+                    Objects.isNull(pageLocation.getInfo().getNext())) {
+                LOGGER.info(LocationService.class.getName() + " RestTemplate getForObject  with url null");
+            } else {
+                LOGGER.info(LocationService.class.getName() + " RestTemplate getForObject  with url " + pageLocation.getInfo().getNext());
+
+            }
             if (pageLocation.getInfo().getNext() == null) {
                 pageLocationList.add(pageLocation);
                 break;

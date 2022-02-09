@@ -135,7 +135,7 @@ class CharacterServiceTest {
                 () -> characterService.getCharacterById(1L));
         verify(characterRepo, times(1)).findById(eq(1L));
 
-        assertEquals("404 NOT_FOUND \"User not found with id: 1\"", exception.getMessage());
+        assertEquals("404 NOT_FOUND \"Character not found with id: 1\"", exception.getMessage());
     }
 
     @Test
