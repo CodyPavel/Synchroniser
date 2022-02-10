@@ -12,14 +12,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
-@Configuration
-@EnableScheduling
+import java.util.stream.Stream;
+
 @SpringBootApplication
 public class RickAndMortyApiApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(RickAndMortyApiApplication.class, args);
     }
+
 
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
@@ -29,12 +30,14 @@ public class RickAndMortyApiApplication {
     @Bean
     CommandLineRunner runner(EpisodeService episodeService,
                              CharacterService characterService,
-                             LocationService locationService,
-                             RestTemplate restTemplate) {
+                             LocationService locationService) {
         return args -> {
-            locationService.loadData(restTemplate);
-            episodeService.loadData(restTemplate);
+            locationService.loadData();
+            episodeService.loadData();
             characterService.loadData();
         };
     }
 }
+
+
+

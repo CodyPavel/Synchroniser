@@ -36,12 +36,15 @@ public class LocationService {
 
     private LocationRepo locationRepo;
 
+
+    private RestTemplate restTemplate;
     //TODO: Get all location from cache
     @Autowired
     private LocationCache locationCache;
 
-    public LocationService(LocationRepo locationRepo) {
+    public LocationService(LocationRepo locationRepo, RestTemplate restTemplate) {
         this.locationRepo = locationRepo;
+        this.restTemplate = restTemplate;
     }
 
     public Iterable<Location> list() {
@@ -60,7 +63,7 @@ public class LocationService {
     }
 
 
-    public void loadData(RestTemplate restTemplate) {
+    public void loadData() {
         PageLocation pageLocation = restTemplate.getForObject(RESOURCE_LOCATION_URL, PageLocation.class);
         LOGGER.info(LocationService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_LOCATION_URL);
 
@@ -87,7 +90,9 @@ public class LocationService {
             List<LocationDTO> results = pageLocationElement.getResults();
             results.forEach(result -> {
                 Location location = modelMapper.map(result, Location.class);
-                locations.add(location);
+                if (locationRepo.findByName(location.getName()).isEmpty()) {
+                    locations.add(location);
+                }
             });
         });
         save(locations);

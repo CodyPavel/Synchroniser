@@ -36,6 +36,13 @@ public class EpisodeService {
 
     private EpisodeRepo episodeRepo;
 
+    private RestTemplate restTemplate;
+
+    public EpisodeService(EpisodeRepo episodeRepo, RestTemplate restTemplate) {
+        this.episodeRepo = episodeRepo;
+        this.restTemplate = restTemplate;
+    }
+
     public List<Episode> list() {
         List<Episode> episodes = new ArrayList<>();
         for (Episode episode : episodeRepo.findAll()) {
@@ -50,10 +57,6 @@ public class EpisodeService {
     public Episode getById(Long id) {
         LOGGER.info(EpisodeService.class.getName() + " got episode with id: " + id);
         return episodeRepo.findById(id).orElseThrow(NoSuchElementException::new);
-    }
-
-    public EpisodeService(EpisodeRepo episodeRepo) {
-        this.episodeRepo = episodeRepo;
     }
 
     public Episode save(Episode episode) {
@@ -144,7 +147,7 @@ public class EpisodeService {
         return pageEpisode;
     }
 
-    public void loadData(RestTemplate restTemplate) {
+    public void loadData() {
         PageEpisode pageEpisode = restTemplate.getForObject(RESOURCE_EPISODE_URL, PageEpisode.class);
         LOGGER.info(EpisodeService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_EPISODE_URL);
 
@@ -171,7 +174,9 @@ public class EpisodeService {
             List<EpisodeDTO> results = pageEpisodeElement.getResults();
             results.forEach(result -> {
                 Episode episode = modelMapper.map(result, Episode.class);
-                episodes.add(episode);
+                if (episodeRepo.findByUrl(episode.getUrl()).isEmpty()) {
+                    episodes.add(episode);
+                }
             });
         });
 
