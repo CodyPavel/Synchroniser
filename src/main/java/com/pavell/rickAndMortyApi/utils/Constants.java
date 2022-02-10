@@ -2,6 +2,9 @@ package com.pavell.rickAndMortyApi.utils;
 
 import lombok.experimental.UtilityClass;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @UtilityClass
 public final class Constants {
 
@@ -17,4 +20,5 @@ public final class Constants {
     public static final String SLASH = "/";
 
     public static final int SIZE = 20;
+
 }

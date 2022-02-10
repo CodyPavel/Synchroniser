@@ -26,8 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -322,13 +320,14 @@ public class CharacterService {
                 });
                 character.setEpisode(episodeList);
 
-                characters.add(character);
+                if (characterRepo.findByImage(character.getImage()).isEmpty()) {
+                      characters.add(character);
+                }
             });
         });
         characterRepo.saveAll(characters);
         LOGGER.info(CharacterService.class.getName() + " saved all characters with names " +
                 characters.stream().map(Character::getName).collect(Collectors.joining(", ")));
-
 
     }
 }
