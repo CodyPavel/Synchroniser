@@ -142,9 +142,7 @@ public class EpisodeService {
         return episodeRepo.findAll().stream()
                 .map(Episode::getCharacters)
                 .flatMap(Collection::stream)
-                .sorted(
-                        Comparator.comparing(Character::getId)
-                )
+                .sorted(Comparator.comparing(Character::getId))
                 .distinct()
                 .limit(5)
                 .map(character -> modelMapper.map(character, CharacterResponse.class))

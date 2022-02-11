@@ -160,7 +160,6 @@ public class CharacterService {
     }
 
     public Long getCountSpecialCharacter() {
-//        status":"Dead","species":"Human","gender":"Male”.
         return characterRepo.findAll().stream()
                 .filter(character -> CharacterStatus.DEAD.equals(character.getStatus()))
                 .filter(character -> "Human".equalsIgnoreCase(character.getSpecies()))
