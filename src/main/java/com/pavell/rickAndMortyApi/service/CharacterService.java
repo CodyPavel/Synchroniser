@@ -13,6 +13,7 @@ import com.pavell.rickAndMortyApi.repo.CharacterRepo;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import com.pavell.rickAndMortyApi.response.CharacterResponse;
+import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
@@ -147,6 +148,107 @@ public class CharacterService {
         return pageResponse;
     }
 
+    public LocationResponse getCommonPlanet() {
+        return characterRepo.findAll().stream()
+                .map(Character::getLocation)
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Location::getId))
+                .distinct()
+                .limit(1)
+                .map(location -> modelMapper.map(location, LocationResponse.class))
+                .findFirst().orElse(null);
+    }
+
+    public Long getCountSpecialCharacter() {
+//        status":"Dead","species":"Human","gender":"Male”.
+        return characterRepo.findAll().stream()
+                .filter(character -> CharacterStatus.DEAD.equals(character.getStatus()))
+                .filter(character -> "Human".equalsIgnoreCase(character.getSpecies()))
+                .filter(character -> Gender.MALE.equals(character.getGender()))
+                .count();
+    }
+
+    public void loadData() {
+        PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
+        LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_CHARACTER_URL);
+
+        List<PageCharacter> pageCharacterList = new ArrayList<>();
+        while (true) {
+            pageCharacterList.add(pageCharacter);
+            pageCharacter = restTemplate.getForObject(pageCharacter.getInfo().getNext(), PageCharacter.class);
+            if (Objects.isNull(pageCharacter) ||
+                    Objects.isNull(pageCharacter.getInfo()) ||
+                    Objects.isNull(pageCharacter.getInfo().getNext())) {
+                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url null");
+            } else {
+                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + pageCharacter.getInfo().getNext());
+
+            }
+
+            if (pageCharacter == null || pageCharacter.getInfo() == null) {
+                break;
+            } else if (pageCharacter.getInfo().getNext() == null) {
+                pageCharacterList.add(pageCharacter);
+                break;
+            }
+        }
+
+        ArrayList<Character> characters = new ArrayList<>();
+        pageCharacterList.forEach(pageCharacterElement -> {
+            List<CharacterDTO> results = pageCharacterElement.getResults();
+            results.forEach(result -> {
+                Character character = modelMapper.map(result, Character.class);
+
+                character.setStatus(CharacterStatus.valueOf(result.getStatus().toUpperCase()));
+                character.setGender(Gender.valueOf(result.getGender().toUpperCase()));
+
+                Location location = null;
+                Location origin = null;
+                try {
+                    if (!"unknown".equalsIgnoreCase(character.getLocation().getName())) {
+                        location = locationCache.getByName(character.getLocation().getName());
+                        LOGGER.info(CharacterService.class.getName() + " got location from cache with name " + character.getLocation().getName());
+
+                    }
+                    if (!"unknown".equalsIgnoreCase(character.getOrigin().getName())) {
+                        origin = locationCache.getByName(character.getOrigin().getName());
+                        LOGGER.info(CharacterService.class.getName() + " got location(as origin) from cache with name " + character.getOrigin().getName());
+
+                    }
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                if (origin == null) {
+                    character.setOrigin(null);
+                } else {
+                    character.setOrigin(origin);
+                }
+
+                if (location == null) {
+                    character.setLocation(null);
+                } else {
+                    character.setLocation(location);
+                }
+
+                List<Episode> episodeList = new ArrayList<>();
+                result.getEpisode().forEach(episode -> {
+                    Optional<Episode> optionalEpisode = episodeRepo.findByUrl(episode);
+                    optionalEpisode.ifPresent(episodeList::add);
+                });
+                character.setEpisode(episodeList);
+
+                if (characterRepo.findByImage(character.getImage()).isEmpty()) {
+                    characters.add(character);
+                }
+            });
+        });
+        characterRepo.saveAll(characters);
+        LOGGER.info(CharacterService.class.getName() + " saved all characters with names " +
+                characters.stream().map(Character::getName).collect(Collectors.joining(", ")));
+
+    }
+
     private void setPrevAndNextToInfoFiltered(InfoResponse info, Page<Character> pageEntity, Long page) {
         String next;
         String prev;
@@ -248,86 +350,5 @@ public class CharacterService {
         paramsMap.put("type", type);
 
         return paramsMap;
-    }
-
-    public void loadData() {
-        PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
-        LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_CHARACTER_URL);
-
-        List<PageCharacter> pageCharacterList = new ArrayList<>();
-        while (true) {
-            pageCharacterList.add(pageCharacter);
-            pageCharacter = restTemplate.getForObject(pageCharacter.getInfo().getNext(), PageCharacter.class);
-            if (Objects.isNull(pageCharacter) ||
-                    Objects.isNull(pageCharacter.getInfo()) ||
-                    Objects.isNull(pageCharacter.getInfo().getNext())) {
-                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url null");
-            } else {
-                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + pageCharacter.getInfo().getNext());
-
-            }
-
-            if (pageCharacter == null || pageCharacter.getInfo() == null) {
-                break;
-            } else if (pageCharacter.getInfo().getNext() == null) {
-                pageCharacterList.add(pageCharacter);
-                break;
-            }
-        }
-
-        ArrayList<Character> characters = new ArrayList<>();
-        pageCharacterList.forEach(pageCharacterElement -> {
-            List<CharacterDTO> results = pageCharacterElement.getResults();
-            results.forEach(result -> {
-                Character character = modelMapper.map(result, Character.class);
-
-                character.setStatus(CharacterStatus.valueOf(result.getStatus().toUpperCase()));
-                character.setGender(Gender.valueOf(result.getGender().toUpperCase()));
-
-                Location location = null;
-                Location origin = null;
-                try {
-                    if (!"unknown".equalsIgnoreCase(character.getLocation().getName())) {
-                        location = locationCache.getByName(character.getLocation().getName());
-                        LOGGER.info(CharacterService.class.getName() + " got location from cache with name " + character.getLocation().getName());
-
-                    }
-                    if (!"unknown".equalsIgnoreCase(character.getOrigin().getName())) {
-                        origin = locationCache.getByName(character.getOrigin().getName());
-                        LOGGER.info(CharacterService.class.getName() + " got location(as origin) from cache with name " + character.getOrigin().getName());
-
-                    }
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
-
-                if (origin == null) {
-                    character.setOrigin(null);
-                } else {
-                    character.setOrigin(origin);
-                }
-
-                if (location == null) {
-                    character.setLocation(null);
-                } else {
-                    character.setLocation(location);
-                }
-
-                List<Episode> episodeList = new ArrayList<>();
-                result.getEpisode().forEach(episode -> {
-                    Optional<Episode> optionalEpisode = episodeRepo.findByUrl(episode);
-                    optionalEpisode.ifPresent(episodeList::add);
-                });
-                character.setEpisode(episodeList);
-
-                if (characterRepo.findByImage(character.getImage()).isEmpty()) {
-                      characters.add(character);
-                }
-            });
-        });
-        characterRepo.saveAll(characters);
-        LOGGER.info(CharacterService.class.getName() + " saved all characters with names " +
-                characters.stream().map(Character::getName).collect(Collectors.joining(", ")));
-
     }
 }

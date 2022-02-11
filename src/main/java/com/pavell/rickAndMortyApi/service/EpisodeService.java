@@ -3,7 +3,9 @@ package com.pavell.rickAndMortyApi.service;
 import com.pavell.rickAndMortyApi.dto.episode.EpisodeDTO;
 import com.pavell.rickAndMortyApi.dto.episode.PageEpisode;
 import com.pavell.rickAndMortyApi.entity.Episode;
+import com.pavell.rickAndMortyApi.entity.Character;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
+import com.pavell.rickAndMortyApi.response.CharacterResponse;
 import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
@@ -41,17 +43,6 @@ public class EpisodeService {
     public EpisodeService(EpisodeRepo episodeRepo, RestTemplate restTemplate) {
         this.episodeRepo = episodeRepo;
         this.restTemplate = restTemplate;
-    }
-
-    public List<Episode> list() {
-        List<Episode> episodes = new ArrayList<>();
-        for (Episode episode : episodeRepo.findAll()) {
-            episodes.add(episode);
-        }
-        LOGGER.info(EpisodeService.class.getName() + " got all episodes ");
-
-
-        return episodes;
     }
 
     public Episode getById(Long id) {
@@ -145,6 +136,19 @@ public class EpisodeService {
         pageEpisode.setResults(resultList);
 
         return pageEpisode;
+    }
+
+    public List<CharacterResponse> getCommonCharacters() {
+        return episodeRepo.findAll().stream()
+                .map(Episode::getCharacters)
+                .flatMap(Collection::stream)
+                .sorted(
+                        Comparator.comparing(Character::getId)
+                )
+                .distinct()
+                .limit(5)
+                .map(character -> modelMapper.map(character, CharacterResponse.class))
+                .collect(Collectors.toList());
     }
 
     public void loadData() {

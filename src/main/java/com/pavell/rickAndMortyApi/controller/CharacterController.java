@@ -1,10 +1,11 @@
 package com.pavell.rickAndMortyApi.controller;
 
 import com.pavell.rickAndMortyApi.response.CharacterResponse;
+import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.service.CharacterService;
 import lombok.RequiredArgsConstructor;
-import org.apache.log4j.*;
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,12 +60,12 @@ public class CharacterController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<PageResponse>  getFilteredPage(@RequestParam(required = false) Long page,
-                                        @RequestParam(required = false) String name,
-                                        @RequestParam(required = false) String status,
-                                        @RequestParam(required = false) String species,
-                                        @RequestParam(required = false) String gender,
-                                        @RequestParam(required = false) String type) {
+    public ResponseEntity<PageResponse> getFilteredPage(@RequestParam(required = false) Long page,
+                                                        @RequestParam(required = false) String name,
+                                                        @RequestParam(required = false) String status,
+                                                        @RequestParam(required = false) String species,
+                                                        @RequestParam(required = false) String gender,
+                                                        @RequestParam(required = false) String type) {
 
         PageResponse pageResponse = null;
         try {
@@ -76,4 +77,31 @@ public class CharacterController {
         }
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/common/planet")
+    public ResponseEntity<LocationResponse> getCommonPlanet() {
+        LocationResponse locationResponseList = null;
+        try {
+            locationResponseList = characterService.getCommonPlanet();
+            LOGGER.info(CharacterController.class.getName() + " getting common planet");
+        } catch (Exception e) {
+            LOGGER.error(CharacterController.class.getName() + " error while getting common planet ", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(locationResponseList, HttpStatus.OK);
+    }
+
+    @GetMapping("/count/special/character")
+    public ResponseEntity<Long> getCountSpecialCharacter() {
+        Long countSpecialCharacter = null;
+        try {
+            countSpecialCharacter = characterService.getCountSpecialCharacter();
+            LOGGER.info(CharacterController.class.getName() + " getting count special character");
+        } catch (Exception e) {
+            LOGGER.error(CharacterController.class.getName() + " error while getting count special character ", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(countSpecialCharacter, HttpStatus.OK);
+    }
+
 }

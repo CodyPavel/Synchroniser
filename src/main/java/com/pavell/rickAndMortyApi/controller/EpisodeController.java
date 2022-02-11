@@ -1,5 +1,6 @@
 package com.pavell.rickAndMortyApi.controller;
 
+import com.pavell.rickAndMortyApi.response.CharacterResponse;
 import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.service.EpisodeService;
@@ -76,6 +77,18 @@ public class EpisodeController {
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
+    @GetMapping("/common/characters")
+    public ResponseEntity<List<CharacterResponse>> getCommonCharacters() {
+        List<CharacterResponse> characterResponseList = null;
+        try {
+            characterResponseList = episodeService.getCommonCharacters();
+            LOGGER.info(EpisodeController.class.getName() + " getting common characters from episodes");
+        } catch (Exception e) {
+            LOGGER.error(EpisodeController.class.getName() + " error while getting common characters from episodes ", e);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(characterResponseList, HttpStatus.OK);
+    }
 }
 
 

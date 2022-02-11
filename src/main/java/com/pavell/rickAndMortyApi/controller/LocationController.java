@@ -75,7 +75,6 @@ public class LocationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
