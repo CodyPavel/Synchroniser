@@ -82,7 +82,6 @@ class CharacterControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk()).andReturn();
-        //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"http://localhost:8080/api/character/null\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"gender\":\"MALE\""));
 
@@ -124,7 +123,6 @@ class CharacterControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk()).andReturn();
-        //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"http://localhost:8080/api/character/null\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"gender\":\"MALE\""));
 
@@ -158,7 +156,6 @@ class CharacterControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk()).andReturn();
-        //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"http://localhost:8080/api/character/null\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"gender\":\"MALE\""));
 

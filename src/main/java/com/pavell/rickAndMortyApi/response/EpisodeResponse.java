@@ -35,7 +35,6 @@ public class EpisodeResponse extends AbstractResult {
     }
 
     public void setCharacters(List<Character> characters) {
-        //TODO: Change name to url
         ArrayList arrayList = new ArrayList();
         characters.forEach(character -> arrayList.add(character.getName()));
         this.characters = arrayList;

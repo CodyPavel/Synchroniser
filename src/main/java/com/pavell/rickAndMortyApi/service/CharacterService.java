@@ -17,7 +17,8 @@ import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,8 +39,8 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToPrevAndNext;
 
 @Service
+@Slf4j
 public class CharacterService {
-    final static Logger LOGGER = Logger.getLogger(CharacterService.class);
 
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -77,14 +78,14 @@ public class CharacterService {
     public List<Character> saveAll(List<Character> character) {
         List<Character> characterList = new ArrayList<>();
         characterRepo.saveAll(character).forEach(characterList::add);
-        LOGGER.info(CharacterService.class.getName() + " saved all characters ");
+        log.info(CharacterService.class.getName() + " saved all characters ");
         return characterList;
     }
 
     public PageResponse getPage(Long page) {
         if (page == null) page = 1L;
         Page<Character> characterPage = characterRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
-        LOGGER.info(CharacterService.class.getName() + " find all characters by page: " + page);
+        log.info(CharacterService.class.getName() + " find all characters by page: " + page);
 
         PageResponse pageResponse = parseToPageResponse(characterPage);
         InfoResponse info = createInfoResponse(characterPage);
@@ -97,17 +98,17 @@ public class CharacterService {
     public CharacterResponse getCharacterById(Long id) {
         Optional<Character> optionalCharacter = characterRepo.findById(id);
         if (optionalCharacter.isPresent()) {
-            LOGGER.info(CharacterService.class.getName() + " got character with id id:");
+            log.info(CharacterService.class.getName() + " got character with id id:");
             return modelMapper.map(optionalCharacter.get(), CharacterResponse.class);
         } else {
-            LOGGER.error(CharacterService.class.getName() + "Character not found with id: " + id);
+            log.error(CharacterService.class.getName() + "Character not found with id: " + id);
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Character not found with id: " + id);
         }
 
     }
 
     public List<CharacterResponse> getCharacterByIds(String[] ids) {
-        LOGGER.info(CharacterService.class.getName() + " got characters with ids: " + Arrays.toString(ids));
+        log.info(CharacterService.class.getName() + " got characters with ids: " + Arrays.toString(ids));
 
         return Arrays.stream(ids)
                 .map(id -> characterRepo.findById(Long.valueOf(id)).orElseGet(null))
@@ -127,7 +128,7 @@ public class CharacterService {
                         type));
 
         Page<Character> pageEntity = characterRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
-        LOGGER.info(CharacterService.class.getName() + " got characters by page: " + page +
+        log.info(CharacterService.class.getName() + " got characters by page: " + page +
                 " and search criteria params" +
                 " name=" + name +
                 " status=" + status +
@@ -149,6 +150,7 @@ public class CharacterService {
     }
 
     public LocationResponse getCommonPlanet() {
+        //TODO if it have two Common Planet
         return characterRepo.findAll().stream()
                 .map(Character::getLocation)
                 .filter(Objects::nonNull)
@@ -160,6 +162,7 @@ public class CharacterService {
     }
 
     public Long getCountSpecialCharacter() {
+        //TODO что быстрее 3 фильтра или
         return characterRepo.findAll().stream()
                 .filter(character -> CharacterStatus.DEAD.equals(character.getStatus()))
                 .filter(character -> "Human".equalsIgnoreCase(character.getSpecies()))
@@ -169,7 +172,7 @@ public class CharacterService {
 
     public void loadData() {
         PageCharacter pageCharacter = restTemplate.getForObject(RESOURCE_CHARACTER_URL, PageCharacter.class);
-        LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_CHARACTER_URL);
+        log.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_CHARACTER_URL);
 
         List<PageCharacter> pageCharacterList = new ArrayList<>();
         while (true) {
@@ -178,9 +181,9 @@ public class CharacterService {
             if (Objects.isNull(pageCharacter) ||
                     Objects.isNull(pageCharacter.getInfo()) ||
                     Objects.isNull(pageCharacter.getInfo().getNext())) {
-                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url null");
+                log.info(CharacterService.class.getName() + " RestTemplate getForObject  with url null");
             } else {
-                LOGGER.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + pageCharacter.getInfo().getNext());
+                log.info(CharacterService.class.getName() + " RestTemplate getForObject  with url " + pageCharacter.getInfo().getNext());
 
             }
 
@@ -206,12 +209,12 @@ public class CharacterService {
                 try {
                     if (!"unknown".equalsIgnoreCase(character.getLocation().getName())) {
                         location = locationCache.getByName(character.getLocation().getName());
-                        LOGGER.info(CharacterService.class.getName() + " got location from cache with name " + character.getLocation().getName());
+                        log.info(CharacterService.class.getName() + " got location from cache with name " + character.getLocation().getName());
 
                     }
                     if (!"unknown".equalsIgnoreCase(character.getOrigin().getName())) {
                         origin = locationCache.getByName(character.getOrigin().getName());
-                        LOGGER.info(CharacterService.class.getName() + " got location(as origin) from cache with name " + character.getOrigin().getName());
+                        log.info(CharacterService.class.getName() + " got location(as origin) from cache with name " + character.getOrigin().getName());
 
                     }
                 } catch (ExecutionException e) {
@@ -236,17 +239,36 @@ public class CharacterService {
                     optionalEpisode.ifPresent(episodeList::add);
                 });
                 character.setEpisode(episodeList);
-
-                if (characterRepo.findByImage(character.getImage()).isEmpty()) {
+                Optional<Character> optionalCharacter = characterRepo.findByImage(character.getImage());
+                if (optionalCharacter.isEmpty()) {
                     characters.add(character);
+                } else {
+                    Character oldChar = optionalCharacter.get();
+                    updateCharacter(oldChar, character);
+                    characters.add(oldChar);
                 }
             });
         });
         characterRepo.saveAll(characters);
-        LOGGER.info(CharacterService.class.getName() + " saved all characters with names " +
+        log.info(CharacterService.class.getName() + " saved all characters with names " +
                 characters.stream().map(Character::getName).collect(Collectors.joining(", ")));
 
+
     }
+
+    private void updateCharacter(Character oldChar, Character newChar) {
+        oldChar.setOrigin(newChar.getOrigin());
+        oldChar.setLocation(newChar.getLocation());
+        oldChar.setGender(newChar.getGender());
+        oldChar.setStatus(newChar.getStatus());
+        oldChar.setEpisode(newChar.getEpisode());
+        oldChar.setType(newChar.getType());
+        oldChar.setSpecies(newChar.getSpecies());
+        oldChar.setImage(newChar.getImage());
+        oldChar.setName(newChar.getName());
+        oldChar.setCreated(newChar.getCreated());
+    }
+
 
     private void setPrevAndNextToInfoFiltered(InfoResponse info, Page<Character> pageEntity, Long page) {
         String next;

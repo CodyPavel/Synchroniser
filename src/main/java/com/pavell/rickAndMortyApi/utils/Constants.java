@@ -2,11 +2,10 @@ package com.pavell.rickAndMortyApi.utils;
 
 import lombok.experimental.UtilityClass;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.io.*;
 
 @UtilityClass
-public final class Constants {
+public class Constants {
 
     public static final String CHARACTER_URL = "http://localhost:8080/api/character";
     public static final String LOCATION_URL = "http://localhost:8080/api/location";

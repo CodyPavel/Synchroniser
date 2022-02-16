@@ -4,12 +4,14 @@ import com.github.ludoviccarretti.options.PropertiesOptions;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @Component
 public class Backup4jConfig {
-
+    //TODO синглтов
     public static Properties getProperties() {
         //required properties for exporting of db
         Properties properties = new Properties();
@@ -24,4 +26,5 @@ public class Backup4jConfig {
 
         return properties;
     }
+
 }

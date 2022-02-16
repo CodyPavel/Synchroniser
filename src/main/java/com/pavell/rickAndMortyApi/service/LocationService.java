@@ -3,13 +3,15 @@ package com.pavell.rickAndMortyApi.service;
 import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.location.LocationDTO;
 import com.pavell.rickAndMortyApi.dto.location.PageLocation;
+import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaLocation;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,8 +30,8 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToPrevAndNext;
 
 @Service
+@Slf4j
 public class LocationService {
-    final static Logger LOGGER = Logger.getLogger(LocationService.class);
 
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -48,24 +50,24 @@ public class LocationService {
     }
 
     public Iterable<Location> list() {
-        LOGGER.info(LocationService.class.getName() + " got all episodes ");
+        log.info(LocationService.class.getName() + " got all episodes ");
         return locationRepo.findAll();
     }
 
     public Location save(Location location) {
-        LOGGER.info(LocationService.class.getName() + " saved episode with name " + location.getName());
+        log.info(LocationService.class.getName() + " saved episode with name " + location.getName());
         return locationRepo.save(location);
     }
 
     public void save(List<Location> locations) {
-        LOGGER.info(LocationService.class.getName() + " saved all episodes");
+        log.info(LocationService.class.getName() + " saved all episodes");
         locationRepo.saveAll(locations);
     }
 
 
     public void loadData() {
         PageLocation pageLocation = restTemplate.getForObject(RESOURCE_LOCATION_URL, PageLocation.class);
-        LOGGER.info(LocationService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_LOCATION_URL);
+        log.info(LocationService.class.getName() + " RestTemplate getForObject  with url " + RESOURCE_LOCATION_URL);
 
         List<PageLocation> pageLocationList = new ArrayList<>();
         while (true) {
@@ -74,9 +76,9 @@ public class LocationService {
             if (Objects.isNull(pageLocation) ||
                     Objects.isNull(pageLocation.getInfo()) ||
                     Objects.isNull(pageLocation.getInfo().getNext())) {
-                LOGGER.info(LocationService.class.getName() + " RestTemplate getForObject  with url null");
+                log.info(LocationService.class.getName() + " RestTemplate getForObject  with url null");
             } else {
-                LOGGER.info(LocationService.class.getName() + " RestTemplate getForObject  with url " + pageLocation.getInfo().getNext());
+                log.info(LocationService.class.getName() + " RestTemplate getForObject  with url " + pageLocation.getInfo().getNext());
 
             }
             if (pageLocation.getInfo().getNext() == null) {
@@ -90,12 +92,27 @@ public class LocationService {
             List<LocationDTO> results = pageLocationElement.getResults();
             results.forEach(result -> {
                 Location location = modelMapper.map(result, Location.class);
-                if (locationRepo.findByName(location.getName()).isEmpty()) {
+
+                Optional<Location> locationOptional = locationRepo.findByName(location.getName());
+                if (locationOptional.isEmpty()) {
                     locations.add(location);
+                } else {
+                    Location oldLocation = locationOptional.get();
+                    updateEpisode(oldLocation, location);
+                    locations.add(oldLocation);
                 }
+
             });
         });
         save(locations);
+    }
+
+    private void updateEpisode(Location oldLocation, Location newLocation) {
+        oldLocation.setCreated(newLocation.getCreated());
+        oldLocation.setDimension(newLocation.getDimension());
+        oldLocation.setName(newLocation.getName());
+        oldLocation.setType(newLocation.getType());
+        oldLocation.setResidents(newLocation.getResidents());
     }
 
     public PageResponse getPage(Long page) {
@@ -116,7 +133,6 @@ public class LocationService {
         if (optionalEpisode.isPresent()) {
             return modelMapper.map(optionalEpisode.get(), LocationResponse.class);
         } else {
-            //TODO:return exception
             return new LocationResponse();
         }
     }
@@ -148,6 +164,7 @@ public class LocationService {
         return pageResponse;
 
     }
+
 
     private Map<String, String> createParamsMap(Long page, String name, String type, String dimension) {
 
