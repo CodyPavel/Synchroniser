@@ -70,7 +70,6 @@ class LocationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk()).andReturn();
-        //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"test/url\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"Name\""));
 
@@ -88,7 +87,6 @@ class LocationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk()).andReturn();
-        //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"test/url\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"Name\""));
 
@@ -108,7 +106,6 @@ class LocationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk()).andReturn();
-        //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"test/url\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"Name\""));
 
@@ -139,7 +136,6 @@ class LocationControllerTest {
 
         MvcResult result = mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk()).andReturn();
-        //Todo: result.getResponse().getContentAsString() as Object
         assertTrue(result.getResponse().getContentAsString().contains("\"url\":\"test/url\""));
         assertTrue(result.getResponse().getContentAsString().contains("\"name\":\"Name\""));
 

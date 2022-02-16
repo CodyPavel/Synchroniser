@@ -9,9 +9,8 @@ import java.util.Optional;
 
 public interface LocationRepo
         extends PagingAndSortingRepository<Location, Long>, JpaSpecificationExecutor<Location> {
-    // TODO: Re-wright to HQL
-    @Query(value = "select max(id) from location", nativeQuery = true)
-    public Long getMaxId();
+
+
 
     public Optional<Location> findByName(String name);
 

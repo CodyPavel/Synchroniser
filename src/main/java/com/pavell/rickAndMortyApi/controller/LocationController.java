@@ -4,7 +4,8 @@ import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.service.LocationService;
 import lombok.RequiredArgsConstructor;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +16,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/location")
+@Slf4j
 public class LocationController {
-    final static Logger LOGGER = Logger.getLogger(LocationController.class);
     private final LocationService locationService;
 
     @GetMapping
@@ -24,9 +25,9 @@ public class LocationController {
         PageResponse pageResponse = null;
         try {
             pageResponse = locationService.getPage(page);
-            LOGGER.info(LocationController.class.getName() + " getting location page");
+            log.info(LocationController.class.getName() + " getting location page");
         } catch (Exception e) {
-            LOGGER.error(LocationController.class.getName() + " error while getting location page ", e);
+            log.error(LocationController.class.getName() + " error while getting location page ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
@@ -39,9 +40,9 @@ public class LocationController {
         LocationResponse locationResponse = null;
         try {
             locationResponse = locationService.getLocationById(id);
-            LOGGER.info(LocationController.class.getName() + " getting location by ID");
+            log.info(LocationController.class.getName() + " getting location by ID");
         } catch (Exception e) {
-            LOGGER.error(LocationController.class.getName() + " error while getting location by ID  ", e);
+            log.error(LocationController.class.getName() + " error while getting location by ID  ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(locationResponse, HttpStatus.OK);
@@ -53,9 +54,9 @@ public class LocationController {
         List<LocationResponse> locationResponseList = null;
         try {
             locationResponseList = locationService.getLocationsByIds(ids);
-            LOGGER.info(LocationController.class.getName() + " getting locations by Ids");
+            log.info(LocationController.class.getName() + " getting locations by Ids");
         } catch (Exception e) {
-            LOGGER.error(LocationController.class.getName() + " error while getting locations by Ids ", e);
+            log.error(LocationController.class.getName() + " error while getting locations by Ids ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(locationResponseList, HttpStatus.OK);
@@ -69,9 +70,9 @@ public class LocationController {
         PageResponse pageResponse = null;
         try {
             pageResponse = locationService.getFilteredPage(type, name, dimension, page);
-            LOGGER.info(LocationController.class.getName() + " getting location filtered page");
+            log.info(LocationController.class.getName() + " getting location filtered page");
         } catch (Exception e) {
-            LOGGER.error(LocationController.class.getName() + " error while getting location filtered page ", e);
+            log.error(LocationController.class.getName() + " error while getting location filtered page ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 

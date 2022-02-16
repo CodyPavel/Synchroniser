@@ -5,7 +5,10 @@ import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.service.CharacterService;
 import lombok.RequiredArgsConstructor;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,8 +18,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/character")
 @RequiredArgsConstructor
+@Slf4j
 public class CharacterController {
-    final static Logger LOGGER = Logger.getLogger(CharacterController.class);
 
     private final CharacterService characterService;
 
@@ -25,9 +28,9 @@ public class CharacterController {
         PageResponse pageResponse = null;
         try {
             pageResponse = characterService.getPage(page);
-            LOGGER.info(CharacterController.class.getName() + " getting character page");
+            log.info(CharacterController.class.getName() + " getting character page");
         } catch (Exception e) {
-            LOGGER.error(CharacterController.class.getName() + " error while getting character page ", e);
+            log.error(CharacterController.class.getName() + " error while getting character page ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
@@ -38,9 +41,9 @@ public class CharacterController {
         CharacterResponse characterResponse = null;
         try {
             characterResponse = characterService.getCharacterById(id);
-            LOGGER.info(CharacterController.class.getName() + " getting character by Id");
+            log.info(CharacterController.class.getName() + " getting character by Id");
         } catch (Exception e) {
-            LOGGER.error(CharacterController.class.getName() + " error while getting character by Id ", e);
+            log.error(CharacterController.class.getName() + " error while getting character by Id ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(characterResponse, HttpStatus.OK);
@@ -51,9 +54,9 @@ public class CharacterController {
         List<CharacterResponse> characterResponseList = null;
         try {
             characterResponseList = characterService.getCharacterByIds(ids);
-            LOGGER.info(CharacterController.class.getName() + " getting characters by Ids");
+            log.info(CharacterController.class.getName() + " getting characters by Ids");
         } catch (Exception e) {
-            LOGGER.error(CharacterController.class.getName() + " error while getting characters by Ids ", e);
+            log.error(CharacterController.class.getName() + " error while getting characters by Ids ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(characterResponseList, HttpStatus.OK);
@@ -70,9 +73,9 @@ public class CharacterController {
         PageResponse pageResponse = null;
         try {
             pageResponse = characterService.getFilteredPage(page, name, status, species, gender, type);
-            LOGGER.info(CharacterController.class.getName() + " getting character filtered character page");
+            log.info(CharacterController.class.getName() + " getting character filtered character page");
         } catch (Exception e) {
-            LOGGER.error(CharacterController.class.getName() + " error while getting filtered character page ", e);
+            log.error(CharacterController.class.getName() + " error while getting filtered character page ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
@@ -83,9 +86,9 @@ public class CharacterController {
         LocationResponse locationResponseList = null;
         try {
             locationResponseList = characterService.getCommonPlanet();
-            LOGGER.info(CharacterController.class.getName() + " getting common planet");
+            log.info(CharacterController.class.getName() + " getting common planet");
         } catch (Exception e) {
-            LOGGER.error(CharacterController.class.getName() + " error while getting common planet ", e);
+            log.error(CharacterController.class.getName() + " error while getting common planet ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(locationResponseList, HttpStatus.OK);
@@ -96,9 +99,9 @@ public class CharacterController {
         Long countSpecialCharacter = null;
         try {
             countSpecialCharacter = characterService.getCountSpecialCharacter();
-            LOGGER.info(CharacterController.class.getName() + " getting count special character");
+            log.info(CharacterController.class.getName() + " getting count special character");
         } catch (Exception e) {
-            LOGGER.error(CharacterController.class.getName() + " error while getting count special character ", e);
+            log.error(CharacterController.class.getName() + " error while getting count special character ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(countSpecialCharacter, HttpStatus.OK);

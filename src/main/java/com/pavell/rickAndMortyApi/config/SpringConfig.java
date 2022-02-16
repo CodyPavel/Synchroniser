@@ -36,9 +36,10 @@ public class SpringConfig {
     }
 
     @Scheduled(cron = "0 0 8-10 * * *")
-    private void getSynchronizationRickApiJob() {
+    public void getSynchronizationRickApiJob() {
         locationService.loadData();
         episodeService.loadData();
         characterService.loadData();
     }
+
 }
