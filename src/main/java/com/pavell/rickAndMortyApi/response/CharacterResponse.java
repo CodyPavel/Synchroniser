@@ -6,6 +6,7 @@ import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.enums.CharacterStatus;
 import com.pavell.rickAndMortyApi.response.common.AbstractResult;
 import com.pavell.rickAndMortyApi.utils.Constants;
+import lombok.ToString;
 
 import javax.annotation.Generated;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
+@ToString
 public class CharacterResponse extends AbstractResult {
 
     private Long id;

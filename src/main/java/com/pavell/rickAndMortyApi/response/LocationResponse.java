@@ -3,6 +3,7 @@ package com.pavell.rickAndMortyApi.response;
 
 import com.pavell.rickAndMortyApi.response.common.AbstractResult;
 import com.pavell.rickAndMortyApi.utils.Constants;
+import lombok.ToString;
 
 import javax.annotation.Generated;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
+@ToString
 public class LocationResponse extends AbstractResult {
 
     private Long id;
