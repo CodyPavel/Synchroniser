@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.concurrent.ForkJoinPool;
 
 import static com.pavell.rickAndMortyApi.backup.Backup4jConfig.getProperties;
 
@@ -34,4 +35,5 @@ public class BackupService {
 
         return res;
     }
+
 }

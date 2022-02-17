@@ -1,10 +1,13 @@
 package com.pavell.rickAndMortyApi.response.common;
 
 
+import lombok.ToString;
+
 import javax.annotation.Generated;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
+@ToString
 public class InfoResponse {
 
     private Long count;

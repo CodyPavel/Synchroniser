@@ -3,12 +3,14 @@ package com.pavell.rickAndMortyApi.response.common;
 
 import com.pavell.rickAndMortyApi.response.common.AbstractResult;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
+import lombok.ToString;
 
 import javax.annotation.Generated;
 import java.util.List;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
+@ToString
 public class PageResponse  {
 
     private InfoResponse info;

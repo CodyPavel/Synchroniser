@@ -3,6 +3,7 @@ package com.pavell.rickAndMortyApi.response;
 
 import com.pavell.rickAndMortyApi.entity.Character;
 import com.pavell.rickAndMortyApi.response.common.AbstractResult;
+import lombok.ToString;
 
 import javax.annotation.Generated;
 import java.text.DateFormat;
@@ -18,6 +19,7 @@ import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
+@ToString
 public class EpisodeResponse extends AbstractResult {
 
     private Long id;
