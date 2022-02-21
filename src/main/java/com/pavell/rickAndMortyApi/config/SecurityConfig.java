@@ -1,73 +1,55 @@
 package com.pavell.rickAndMortyApi.config;
 
+import com.pavell.rickAndMortyApi.config.security.JwtRequestFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
-
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.PushbackReader;
-import java.util.UUID;
-
-import static com.pavell.rickAndMortyApi.utils.Constants.USER;
-import static java.util.UUID.randomUUID;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
-@Configuration
-@Order(1)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableWebSecurity
+class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private final UserDetailsService myUserDetailsService;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    private DigestAuthenticationEntryPoint getDigestEntryPoint() {
-        DigestAuthenticationEntryPoint digestEntryPoint = new DigestAuthenticationEntryPoint();
-        digestEntryPoint.setRealmName("admin-digest-realm");
-        digestEntryPoint.setKey("somedigestkey");
-
-        return digestEntryPoint;
+    public SecurityConfig(UserDetailsService myUserDetailsService, JwtRequestFilter jwtRequestFilter) {
+        this.myUserDetailsService = myUserDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-
-        return NoOpPasswordEncoder.getInstance();
-    }
-
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("user")
-                .password(passwordEncoder().encode("1234"))
-                .roles(USER);
-    }
-
-    @Bean
-    public UserDetailsService userDetailsServiceBean() throws Exception {
-        return super.userDetailsServiceBean();
-    }
-
-    private DigestAuthenticationFilter getDigestAuthFilter() throws Exception {
-        DigestAuthenticationFilter digestFilter = new DigestAuthenticationFilter();
-
-        digestFilter.setUserDetailsService(userDetailsServiceBean());
-
-
-        digestFilter.setAuthenticationEntryPoint(getDigestEntryPoint());
-        return digestFilter;
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(myUserDetailsService);
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/**").
-                addFilter(getDigestAuthFilter()).exceptionHandling()
-                .authenticationEntryPoint(getDigestEntryPoint())
-                .and().authorizeRequests().antMatchers("/**").hasRole(USER);
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+
     }
+
+
+
+
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.csrf().disable()
+                .authorizeRequests().antMatchers("/authenticate").permitAll().
+                anyRequest().authenticated().and().
+                exceptionHandling().and().sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+    }
+
 }
