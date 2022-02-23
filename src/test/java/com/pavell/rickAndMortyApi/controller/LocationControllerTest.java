@@ -1,11 +1,9 @@
 package com.pavell.rickAndMortyApi.controller;
 
-import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
-import com.pavell.rickAndMortyApi.service.EpisodeService;
-import com.pavell.rickAndMortyApi.service.LocationService;
+import com.pavell.rickAndMortyApi.service.impl.LocationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,14 +1,20 @@
 package com.pavell.rickAndMortyApi;
 
-import com.pavell.rickAndMortyApi.service.CharacterService;
-import com.pavell.rickAndMortyApi.service.EpisodeService;
-import com.pavell.rickAndMortyApi.service.LocationService;
+import com.pavell.rickAndMortyApi.entity.RoleEntity;
+import com.pavell.rickAndMortyApi.entity.UserEntity;
+import com.pavell.rickAndMortyApi.service.RoleService;
+import com.pavell.rickAndMortyApi.service.UserService;
+import com.pavell.rickAndMortyApi.service.impl.CharacterService;
+import com.pavell.rickAndMortyApi.service.impl.EpisodeService;
+import com.pavell.rickAndMortyApi.service.impl.LocationService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
 
 @SpringBootApplication
 public class RickAndMortyApiApplication {
@@ -25,8 +31,22 @@ public class RickAndMortyApiApplication {
     @Bean
     CommandLineRunner runner(EpisodeService episodeService,
                              CharacterService characterService,
-                             LocationService locationService) {
+                             LocationService locationService,
+                             UserService userService,
+                             RoleService roleService) {
+
+
         return args -> {
+            roleService.save(new RoleEntity(null, "ROLE_USER"));
+            roleService.save(new RoleEntity(null, "ROLE_ADMIN"));
+
+            userService.save(new UserEntity(null, "pavel", "1234", new ArrayList<>()));
+            userService.save(new UserEntity(null, "dima", "1234", new ArrayList<>()));
+
+            userService.addRoleToUser("pavel", "ROLE_USER");
+            userService.addRoleToUser("dima", "ROLE_ADMIN");
+            userService.addRoleToUser("dima", "ROLE_USER");
+
             locationService.loadData();
             episodeService.loadData();
             characterService.loadData();

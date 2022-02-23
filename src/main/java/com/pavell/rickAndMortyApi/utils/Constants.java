@@ -16,6 +16,9 @@ public class Constants {
     public static final String RESOURCE_EPISODE_URL = "https://rickandmortyapi.com/api/episode";
 
     public static final String REQUEST_PARAM_PAGE_DELIMITER = "?page=";
+    public static final String ADMIN = "ADMIN";
+    public static final String USER = "USER";
+
     public static final String SLASH = "/";
 
     public static final int SIZE = 20;

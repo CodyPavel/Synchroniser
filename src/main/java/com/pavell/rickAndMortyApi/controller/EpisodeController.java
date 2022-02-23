@@ -3,7 +3,7 @@ package com.pavell.rickAndMortyApi.controller;
 import com.pavell.rickAndMortyApi.response.CharacterResponse;
 import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
-import com.pavell.rickAndMortyApi.service.EpisodeService;
+import com.pavell.rickAndMortyApi.service.impl.EpisodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

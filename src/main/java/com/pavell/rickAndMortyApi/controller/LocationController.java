@@ -2,7 +2,7 @@ package com.pavell.rickAndMortyApi.controller;
 
 import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
-import com.pavell.rickAndMortyApi.service.LocationService;
+import com.pavell.rickAndMortyApi.service.impl.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
