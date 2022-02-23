@@ -1,9 +1,9 @@
 package com.pavell.rickAndMortyApi.config;
 
 import com.pavell.rickAndMortyApi.backup.BackupService;
-import com.pavell.rickAndMortyApi.service.CharacterService;
-import com.pavell.rickAndMortyApi.service.EpisodeService;
-import com.pavell.rickAndMortyApi.service.LocationService;
+import com.pavell.rickAndMortyApi.service.impl.CharacterService;
+import com.pavell.rickAndMortyApi.service.impl.EpisodeService;
+import com.pavell.rickAndMortyApi.service.impl.LocationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -32,8 +32,9 @@ public class SpringConfig {
         this.episodeService = episodeService;
         this.characterService = characterService;
     }
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

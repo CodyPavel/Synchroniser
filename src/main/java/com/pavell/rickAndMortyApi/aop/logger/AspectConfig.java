@@ -30,6 +30,9 @@ public class AspectConfig {
         this.response = response;
     }
 
+//    private
+
+//    protected
     @Pointcut("within(com.pavell.rickAndMortyApi.controller..*)")
     public void controllerPointcut() {
 

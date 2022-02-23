@@ -1,4 +1,4 @@
-package com.pavell.rickAndMortyApi.service;
+package com.pavell.rickAndMortyApi.service.impl;
 
 import com.pavell.rickAndMortyApi.dto.episode.EpisodeDTO;
 import com.pavell.rickAndMortyApi.dto.episode.PageEpisode;
@@ -10,10 +10,8 @@ import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaEpisode;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;

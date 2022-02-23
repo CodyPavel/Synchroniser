@@ -1,16 +1,14 @@
-package com.pavell.rickAndMortyApi.service;
+package com.pavell.rickAndMortyApi.service.impl;
 
 import com.pavell.rickAndMortyApi.cache.LocationCache;
 import com.pavell.rickAndMortyApi.dto.location.LocationDTO;
 import com.pavell.rickAndMortyApi.dto.location.PageLocation;
-import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaLocation;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

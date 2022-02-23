@@ -1,4 +1,4 @@
-package com.pavell.rickAndMortyApi.service;
+package com.pavell.rickAndMortyApi.service.impl;
 
 import com.pavell.rickAndMortyApi.backup.BackupService;
 import com.pavell.rickAndMortyApi.cache.LocationCache;
@@ -17,7 +17,6 @@ import com.pavell.rickAndMortyApi.response.LocationResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;

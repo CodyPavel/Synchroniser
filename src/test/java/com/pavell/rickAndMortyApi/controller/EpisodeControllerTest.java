@@ -1,10 +1,9 @@
 package com.pavell.rickAndMortyApi.controller;
 
-import com.pavell.rickAndMortyApi.response.CharacterResponse;
 import com.pavell.rickAndMortyApi.response.EpisodeResponse;
 import com.pavell.rickAndMortyApi.response.common.InfoResponse;
 import com.pavell.rickAndMortyApi.response.common.PageResponse;
-import com.pavell.rickAndMortyApi.service.EpisodeService;
+import com.pavell.rickAndMortyApi.service.impl.EpisodeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,7 +19,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static com.pavell.rickAndMortyApi.utils.Constants.SLASH;
