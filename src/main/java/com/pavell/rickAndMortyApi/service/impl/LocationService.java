@@ -12,6 +12,7 @@ import com.pavell.rickAndMortyApi.specification.SearchCriteriaLocation;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -22,7 +23,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.pavell.rickAndMortyApi.specification.LocationSpecification.findByCriteria;
-import static com.pavell.rickAndMortyApi.utils.Constants.*;
 import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToPrevAndNext;
@@ -31,6 +31,14 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToP
 @Slf4j
 public class LocationService {
 
+    public static final String LOCATION_URL = "http://localhost:8080/api/location";
+    public static final String RESOURCE_LOCATION_URL = "https://rickandmortyapi.com/api/location";
+
+    @Value("${page.size}")
+    private int pageSize;
+
+    @Value("${request.param.page.delimiter}")
+    private String delimiter;
 
     private ModelMapper modelMapper = new ModelMapper();
 
@@ -115,7 +123,7 @@ public class LocationService {
 
     public PageResponse getPage(Long page) {
         if (page == null) page = 1L;
-        Page<Location> locationPage = locationRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
+        Page<Location> locationPage = locationRepo.findAll(PageRequest.of(page.intValue() - 1, pageSize));
         PageResponse pageResponse = parseToPageResponse(locationPage);
 
         InfoResponse info = createInfoResponse(locationPage);
@@ -147,7 +155,7 @@ public class LocationService {
         if (page == null) page = 1L;
         Specification<Location> specification =
                 findByCriteria(new SearchCriteriaLocation(type, name, dimension));
-        Page<Location> pageEntity = locationRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+        Page<Location> pageEntity = locationRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), pageSize));
 
         PageResponse pageResponse = parseToPageResponse(pageEntity);
 
@@ -228,14 +236,14 @@ public class LocationService {
         if (page == null || locationPage.getTotalPages() == page) {
             next = null;
         } else {
-            next = LOCATION_URL + REQUEST_PARAM_PAGE_DELIMITER + (page + 1);
+            next = LOCATION_URL + delimiter + (page + 1);
         }
         if (page == null || page == 2) {
             prev = LOCATION_URL;
         } else if (page == 1) {
             prev = null;
         } else {
-            prev = LOCATION_URL + REQUEST_PARAM_PAGE_DELIMITER + (page - 1);
+            prev = LOCATION_URL + delimiter + (page - 1);
         }
 
         info.setNext(next);

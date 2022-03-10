@@ -16,39 +16,29 @@ import java.util.List;
 @RequestMapping("/api/location")
 public class LocationController {
     private final LocationService locationService;
+    private PageResponse pageResponse;
 
     @GetMapping
-    public ResponseEntity<PageResponse> getPage(@RequestParam(required = false) Long page) {
+    public ResponseEntity<PageResponse> getPage(@RequestParam(required = false) Long page) throws Exception {
         PageResponse pageResponse = null;
-        try {
-            pageResponse = locationService.getPage(page);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        pageResponse = locationService.getPage(page);
+
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<LocationResponse> getLocation(@PathVariable Long id) {
-
         LocationResponse locationResponse = null;
-        try {
-            locationResponse = locationService.getLocationById(id);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(locationResponse, HttpStatus.OK);
+        locationResponse = locationService.getLocationById(id);
 
+        return new ResponseEntity<>(locationResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = {"/multiple/{ids}"})
     public ResponseEntity<List<LocationResponse>> getLocations(@PathVariable String[] ids) {
         List<LocationResponse> locationResponseList = null;
-        try {
-            locationResponseList = locationService.getLocationsByIds(ids);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        locationResponseList = locationService.getLocationsByIds(ids);
+
         return new ResponseEntity<>(locationResponseList, HttpStatus.OK);
     }
 
@@ -58,11 +48,8 @@ public class LocationController {
                                                         @RequestParam(required = false) String dimension,
                                                         @RequestParam(required = false) Long page) throws ParseException {
         PageResponse pageResponse = null;
-        try {
-            pageResponse = locationService.getFilteredPage(type, name, dimension, page);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        pageResponse = locationService.getFilteredPage(type, name, dimension, page);
+
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 

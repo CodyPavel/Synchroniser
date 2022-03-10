@@ -1,6 +1,9 @@
 package com.pavell.rickAndMortyApi.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.pavell.rickAndMortyApi.utils.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -18,10 +21,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.pavell.rickAndMortyApi.utils.JwtUtil.SECRET;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -30,6 +36,7 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private static final String BAD_CREDENTIAL_MESSAGE = "Authentication failed for username: %s and password: %s";
+    private static final int expireHourRefreshToken = 72;
 
     private final AuthenticationManager authenticationManager;
 
@@ -68,7 +75,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         User user = (User)authentication.getPrincipal();
         String accessToken = JwtUtil.createAccessToken(user.getUsername(), request.getRequestURL().toString(),
                 user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
-        String refreshToken = JwtUtil.createRefreshToken(user.getUsername());
+        String refreshToken =  createRefreshToken(user.getUsername());
         response.addHeader("access_token", accessToken);
         response.addHeader("refresh_token", refreshToken);
     }
@@ -81,5 +88,24 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
         error.put("errorMessage", "Bad credentials");
         response.setContentType(APPLICATION_JSON_VALUE);
         mapper.writeValue(response.getOutputStream(), error);
+    }
+
+    public   String createRefreshToken(String username) {
+        try {
+            JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                    .subject(username)
+                    .expirationTime(Date.from(Instant.now().plusSeconds(expireHourRefreshToken * 3600)))
+                    .build();
+
+            Payload payload = new Payload(claims.toJSONObject());
+
+            JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256),
+                    payload);
+
+            jwsObject.sign(new MACSigner(SECRET));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            throw new RuntimeException("Error to create JWT", e);
+        }
     }
 }

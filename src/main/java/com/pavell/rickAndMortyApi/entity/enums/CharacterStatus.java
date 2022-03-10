@@ -1,4 +1,4 @@
-package com.pavell.rickAndMortyApi.enums;
+package com.pavell.rickAndMortyApi.entity.enums;
 
 public enum CharacterStatus {
     ALIVE,

@@ -2,7 +2,7 @@ package com.pavell.rickAndMortyApi.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pavell.rickAndMortyApi.dto.RoleDTO;
-import com.pavell.rickAndMortyApi.entity.UserEntity;
+import com.pavell.rickAndMortyApi.entity.User;
 import com.pavell.rickAndMortyApi.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,18 +32,18 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<UserEntity>> findAll() {
+    public ResponseEntity<List<User>> findAll() {
         return ResponseEntity.ok().body(userService.findAll());
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<UserEntity> findByUsername(@PathVariable String username) {
+    public ResponseEntity<User> findByUsername(@PathVariable String username) {
         return ResponseEntity.ok().body(userService.findByUsername(username));
     }
 
     @PostMapping
-    public ResponseEntity<UserEntity> save(@RequestBody UserEntity user) {
-        UserEntity userEntity = userService.save(user);
+    public ResponseEntity<User> save(@RequestBody User user) {
+        User userEntity = userService.save(user);
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentRequest().path("/{username}")
                 .buildAndExpand(userEntity.getUsername()).toUriString());
         return ResponseEntity.created(uri).build();
@@ -51,7 +51,7 @@ public class UserController {
 
     @PostMapping("/{username}/addRoleToUser")
     public ResponseEntity<?> addRoleToUser(@PathVariable String username, @RequestBody RoleDTO request) {
-        UserEntity userEntity = userService.addRoleToUser(username, request.getRoleName());
+        User userEntity = userService.addRoleToUser(username, request.getRoleName());
         return ResponseEntity.ok(userEntity);
     }
 

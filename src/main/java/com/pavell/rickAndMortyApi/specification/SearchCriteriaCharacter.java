@@ -1,7 +1,7 @@
 package com.pavell.rickAndMortyApi.specification;
 
-import com.pavell.rickAndMortyApi.enums.CharacterStatus;
-import com.pavell.rickAndMortyApi.enums.Gender;
+import com.pavell.rickAndMortyApi.entity.enums.CharacterStatus;
+import com.pavell.rickAndMortyApi.entity.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

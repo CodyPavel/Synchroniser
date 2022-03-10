@@ -12,7 +12,6 @@ import java.util.Locale;
 
 @UtilityClass
 public final class TimeDateUtils {
-
     public static LocalDateTime parseDateTime(String dateTime) {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -21,14 +20,16 @@ public final class TimeDateUtils {
             return newCreatedDate;
 
         } catch (Exception e) {
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-            LocalDateTime newCreatedDate = LocalDateTime.parse(dateTime, formatter);
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+                LocalDateTime newCreatedDate = LocalDateTime.parse(dateTime, formatter);
 
-            return newCreatedDate;
+                return newCreatedDate;
+            } catch (Exception exception) {
+                throw new RuntimeException("Can not format date and time: {" + dateTime + "} to LocalDateTime(ISO_DATE_TIME)");
+            }
         }
-
     }
-
 
     public static Date parseDate(String date) throws ParseException {
         try {
@@ -36,11 +37,13 @@ public final class TimeDateUtils {
             Date data = format.parse(date);
             return data;
         } catch (Exception e) {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
-            Date data = format.parse(date);
-            return data;
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+                Date data = format.parse(date);
+                return data;
+            } catch (Exception exception) {
+                throw new RuntimeException("Can not format date: {" + date + "} to SimpleDateFormat(yyyy-MM-dd HH:mm:ss.S)");
+            }
         }
     }
-
-
 }

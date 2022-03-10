@@ -1,7 +1,7 @@
 package com.pavell.rickAndMortyApi;
 
-import com.pavell.rickAndMortyApi.entity.RoleEntity;
-import com.pavell.rickAndMortyApi.entity.UserEntity;
+import com.pavell.rickAndMortyApi.entity.Role;
+import com.pavell.rickAndMortyApi.entity.User;
 import com.pavell.rickAndMortyApi.service.RoleService;
 import com.pavell.rickAndMortyApi.service.UserService;
 import com.pavell.rickAndMortyApi.service.impl.CharacterService;
@@ -37,11 +37,11 @@ public class RickAndMortyApiApplication {
 
 
         return args -> {
-            roleService.save(new RoleEntity(null, "ROLE_USER"));
-            roleService.save(new RoleEntity(null, "ROLE_ADMIN"));
+            roleService.save(new Role(null, "ROLE_USER"));
+            roleService.save(new Role(null, "ROLE_ADMIN"));
 
-            userService.save(new UserEntity(null, "pavel", "1234", new ArrayList<>()));
-            userService.save(new UserEntity(null, "dima", "1234", new ArrayList<>()));
+            userService.save(new User(null, "pavel", "1234", new ArrayList<>()));
+            userService.save(new User(null, "dima", "1234", new ArrayList<>()));
 
             userService.addRoleToUser("pavel", "ROLE_USER");
             userService.addRoleToUser("dima", "ROLE_ADMIN");

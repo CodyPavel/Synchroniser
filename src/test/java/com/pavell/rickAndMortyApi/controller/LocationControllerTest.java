@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -21,7 +22,6 @@ import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.pavell.rickAndMortyApi.utils.Constants.SLASH;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -29,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class LocationControllerTest {
+
+    @Value("${slash.delimiter}")
+    private String slash;
 
     private static final String URI_LOCATION_API = "/api/location";
 
@@ -78,7 +81,7 @@ class LocationControllerTest {
     @Test
     public void shouldGetLocation() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(URI_LOCATION_API + SLASH + "1");
+                .get(URI_LOCATION_API + slash + "1");
 
         LocationResponse locationResponse = createLocationResponse();
         when(locationService.getLocationById(eq(1L))).thenReturn(locationResponse);
@@ -94,7 +97,7 @@ class LocationControllerTest {
     @Test
     public void shouldGetLocations() throws Exception {
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(URI_LOCATION_API + SLASH + "multiple" + SLASH + "1,2");
+                .get(URI_LOCATION_API + slash + "multiple" + slash + "1,2");
 
 
         List<LocationResponse> resultsList = new ArrayList<LocationResponse>();
@@ -119,7 +122,7 @@ class LocationControllerTest {
         params.add("dimension", "dimension");
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(URI_LOCATION_API+ SLASH)
+                .get(URI_LOCATION_API+ slash)
                 .params(params);
 
         PageResponse pageResponse = new PageResponse();

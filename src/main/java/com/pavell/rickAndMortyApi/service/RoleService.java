@@ -1,9 +1,9 @@
 package com.pavell.rickAndMortyApi.service;
 
-import com.pavell.rickAndMortyApi.entity.RoleEntity;
+import com.pavell.rickAndMortyApi.entity.Role;
 
 public interface RoleService {
 
-    RoleEntity save(RoleEntity roleEntity);
+    Role save(Role roleEntity);
 
 }
