@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import com.pavell.rickAndMortyApi.entity.Location;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -14,12 +15,15 @@ import java.util.concurrent.ExecutionException;
 @Component
 public class LocationCache {
 
+    @Value("${cache.max.size}")
+    private int maximumSize;
+
     @Autowired
     private LocationRepo locationRepo;
 
     private LoadingCache<String, Location> locationCache =
             CacheBuilder.newBuilder()
-                    .maximumSize(200)
+                    .maximumSize(maximumSize)
                     .build(new CacheLoader<String, Location>() {
                         @Override
                         public Location load(String locationName) throws Exception {

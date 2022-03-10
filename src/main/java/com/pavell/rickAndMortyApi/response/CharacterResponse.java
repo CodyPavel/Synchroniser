@@ -3,23 +3,30 @@ package com.pavell.rickAndMortyApi.response;
 
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.entity.Location;
-import com.pavell.rickAndMortyApi.enums.CharacterStatus;
+import com.pavell.rickAndMortyApi.entity.enums.CharacterStatus;
 import com.pavell.rickAndMortyApi.response.common.AbstractResult;
-import com.pavell.rickAndMortyApi.utils.Constants;
 import lombok.ToString;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.Generated;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.pavell.rickAndMortyApi.utils.Constants.*;
+import static com.pavell.rickAndMortyApi.service.impl.CharacterService.CHARACTER_URL;
+import static com.pavell.rickAndMortyApi.service.impl.LocationService.LOCATION_URL;
 import static com.pavell.rickAndMortyApi.utils.TimeDateUtils.parseDateTime;
+
 
 @Generated("net.hexar.json2pojo")
 @SuppressWarnings("unused")
 @ToString
 public class CharacterResponse extends AbstractResult {
+
+    public static final String EPISODE_URL = "http://localhost:8080/api/episode";
+
+    @Value("${slash.delimiter}")
+    private String slash;
 
     private Long id;
 
@@ -58,7 +65,7 @@ public class CharacterResponse extends AbstractResult {
     public void setEpisode(List<Episode> episodes) {
         ArrayList<String> episodeStrings = new ArrayList<>();
         episodes.forEach(singleEpisode -> {
-            String episodeUrl = EPISODE_URL + SLASH + singleEpisode.getId().toString();
+            String episodeUrl = EPISODE_URL + slash + singleEpisode.getId().toString();
             episodeStrings.add(episodeUrl);
         });
 
@@ -91,7 +98,7 @@ public class CharacterResponse extends AbstractResult {
         } else {
             LocationResponse locationResponse = new LocationResponse();
             locationResponse.setName(location.getName());
-            locationResponse.setUrl(Constants.LOCATION_URL + SLASH + location.getId());
+            locationResponse.setUrl( LOCATION_URL + slash + location.getId());
             locationResponse.setCreated(location.getCreated().toString());
             locationResponse.setDimension(location.getDimension());
             locationResponse.setType(location.getType());
@@ -117,7 +124,7 @@ public class CharacterResponse extends AbstractResult {
         } else {
             LocationResponse locationResponse = new LocationResponse();
             locationResponse.setName(origin.getName());
-            locationResponse.setUrl(Constants.LOCATION_URL + SLASH + origin.getId());
+            locationResponse.setUrl(LOCATION_URL + slash + origin.getId());
             locationResponse.setCreated(origin.getCreated().toString());
             locationResponse.setDimension(origin.getDimension());
             locationResponse.setType(origin.getType());
@@ -151,7 +158,7 @@ public class CharacterResponse extends AbstractResult {
     }
 
     public String getUrl() {
-        return CHARACTER_URL + SLASH + id;
+        return CHARACTER_URL + slash + id;
     }
 
     public void setUrl(String url) {

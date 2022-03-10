@@ -7,8 +7,8 @@ import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
 import com.pavell.rickAndMortyApi.entity.Character;
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.entity.Location;
-import com.pavell.rickAndMortyApi.enums.CharacterStatus;
-import com.pavell.rickAndMortyApi.enums.Gender;
+import com.pavell.rickAndMortyApi.entity.enums.CharacterStatus;
+import com.pavell.rickAndMortyApi.entity.enums.Gender;
 import com.pavell.rickAndMortyApi.repo.CharacterRepo;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
@@ -19,6 +19,7 @@ import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaCharacter;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -32,7 +33,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import static com.pavell.rickAndMortyApi.specification.CharacterSpecification.findByCriteria;
-import static com.pavell.rickAndMortyApi.utils.Constants.*;
 import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToPrevAndNext;
@@ -40,6 +40,18 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToP
 @Service
 @Slf4j
 public class CharacterService {
+
+    public static final String CHARACTER_URL = "http://localhost:8080/api/character";
+    public static final String RESOURCE_CHARACTER_URL = "https://rickandmortyapi.com/api/character";
+
+    @Value("${page.size}")
+    private int pageSize;
+
+    @Value("${request.param.page.delimiter}")
+    private String delimiter;
+
+    @Value("${slash.delimiter}")
+    private String slash;
 
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -83,7 +95,7 @@ public class CharacterService {
 
     public PageResponse getPage(Long page) {
         if (page == null) page = 1L;
-        Page<Character> characterPage = characterRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
+        Page<Character> characterPage = characterRepo.findAll(PageRequest.of(page.intValue() - 1, pageSize));
         log.info(CharacterService.class.getName() + " find all characters by page: " + page);
 
         PageResponse pageResponse = parseToPageResponse(characterPage);
@@ -126,7 +138,7 @@ public class CharacterService {
                         gender == null ? null : Gender.valueOf(gender.toUpperCase()),
                         type));
 
-        Page<Character> pageEntity = characterRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+        Page<Character> pageEntity = characterRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), pageSize));
         log.info(CharacterService.class.getName() + " got characters by page: " + page +
                 " and search criteria params" +
                 " name=" + name +
@@ -313,14 +325,14 @@ public class CharacterService {
         if (page == null || characterPage.getTotalPages() == page) {
             next = null;
         } else {
-            next = CHARACTER_URL + REQUEST_PARAM_PAGE_DELIMITER + (page + 1);
+            next = CHARACTER_URL + delimiter + (page + 1);
         }
         if (page == null || page == 2) {
             prev = CHARACTER_URL;
         } else if (page == 1) {
             prev = null;
         } else {
-            prev = CHARACTER_URL + REQUEST_PARAM_PAGE_DELIMITER + (page - 1);
+            prev = CHARACTER_URL + delimiter + (page - 1);
         }
 
         info.setNext(next);
@@ -335,9 +347,9 @@ public class CharacterService {
             info.setNext(null);
         }
         if (characterPage.getTotalPages() == page || (characterPage.getTotalPages() > page && page != 1)) {
-            info.setPrev(CHARACTER_URL + REQUEST_PARAM_PAGE_DELIMITER + (page - 1));
+            info.setPrev(CHARACTER_URL + delimiter + (page - 1));
         } else if ((characterPage.getTotalPages() + 1) == page) {
-            info.setPrev(CHARACTER_URL + REQUEST_PARAM_PAGE_DELIMITER + (page - 1));
+            info.setPrev(CHARACTER_URL + delimiter + (page - 1));
         } else if (page == 2) {
             info.setPrev(CHARACTER_URL);
         } else {
@@ -349,7 +361,7 @@ public class CharacterService {
         List<CharacterResponse> charResponseList = new ArrayList<>();
         page.get().forEach(character -> {
             CharacterResponse characterResponse = modelMapper.map(character, CharacterResponse.class);
-            characterResponse.setUrl(CHARACTER_URL + SLASH + character.getId());
+            characterResponse.setUrl(CHARACTER_URL + slash + character.getId());
 
             charResponseList.add(characterResponse);
         });

@@ -1,9 +1,8 @@
 package com.pavell.rickAndMortyApi.entity;
 
-import com.pavell.rickAndMortyApi.enums.CharacterStatus;
-import com.pavell.rickAndMortyApi.enums.Gender;
+import com.pavell.rickAndMortyApi.entity.enums.CharacterStatus;
+import com.pavell.rickAndMortyApi.entity.enums.Gender;
 import lombok.Data;
-import org.hibernate.annotations.Cascade;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

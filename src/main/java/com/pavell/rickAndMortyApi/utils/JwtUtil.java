@@ -24,10 +24,8 @@ import java.util.stream.Collectors;
 public abstract class JwtUtil {
 
     private static final int expireHourToken = 24;
-    private static final int expireHourRefreshToken = 72;
 
-    private static final String SECRET = "FBA898697394CDBC534E7ED86A97AA59F627FE6B309E0A21EEC6C9B130E0369C";
-
+    public static final String SECRET = "FBA898697394CDBC534E7ED86A97AA59F627FE6B309E0A21EEC6C9B130E0369C";
 
     public static String createAccessToken(String username, String issuer, List<String> roles) {
         try {
@@ -35,7 +33,7 @@ public abstract class JwtUtil {
                     .subject(username)
                     .issuer(issuer)
                     .claim("roles", roles)
-                    .expirationTime(Date.from(Instant.now().plusSeconds(30)))//expireHourToken * 3600)))
+                    .expirationTime(Date.from(Instant.now().plusSeconds(expireHourToken * 3600)))
                     .issueTime(new Date())
                     .build();
 
@@ -51,24 +49,7 @@ public abstract class JwtUtil {
         }
     }
 
-    public static String createRefreshToken(String username) {
-        try {
-            JWTClaimsSet claims = new JWTClaimsSet.Builder()
-                    .subject(username)
-                    .expirationTime(Date.from(Instant.now().plusSeconds(expireHourRefreshToken * 3600)))
-                    .build();
 
-            Payload payload = new Payload(claims.toJSONObject());
-
-            JWSObject jwsObject = new JWSObject(new JWSHeader(JWSAlgorithm.HS256),
-                    payload);
-
-            jwsObject.sign(new MACSigner(SECRET));
-            return jwsObject.serialize();
-        } catch (JOSEException e) {
-            throw new RuntimeException("Error to create JWT", e);
-        }
-    }
 
     public static UsernamePasswordAuthenticationToken parseToken(String token) throws JOSEException, ParseException,
             BadJOSEException {

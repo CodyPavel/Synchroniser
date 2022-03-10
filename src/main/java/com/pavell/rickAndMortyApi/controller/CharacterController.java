@@ -21,33 +21,24 @@ public class CharacterController {
     @GetMapping
     public ResponseEntity<PageResponse> getPage(@RequestParam(required = false) Long page) {
         PageResponse pageResponse = null;
-        try {
-            pageResponse = characterService.getPage(page);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        pageResponse = characterService.getPage(page);
+
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = {"{id}"})
     public ResponseEntity<CharacterResponse> getCharacter(@PathVariable Long id) {
         CharacterResponse characterResponse = null;
-        try {
-            characterResponse = characterService.getCharacterById(id);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        characterResponse = characterService.getCharacterById(id);
+
         return new ResponseEntity<>(characterResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = {"/multiple/{ids}"})
     public ResponseEntity<List<CharacterResponse>> getCharacters(@PathVariable String[] ids) {
         List<CharacterResponse> characterResponseList = null;
-        try {
-            characterResponseList = characterService.getCharacterByIds(ids);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        characterResponseList = characterService.getCharacterByIds(ids);
+
         return new ResponseEntity<>(characterResponseList, HttpStatus.OK);
     }
 
@@ -60,34 +51,24 @@ public class CharacterController {
                                                         @RequestParam(required = false) String type) {
 
         PageResponse pageResponse = null;
-        try {
-            pageResponse = characterService.getFilteredPage(page, name, status, species, gender, type);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        pageResponse = characterService.getFilteredPage(page, name, status, species, gender, type);
+
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @GetMapping("/common/planet")
     public ResponseEntity<LocationResponse> getCommonPlanet() {
         LocationResponse locationResponseList = null;
-        try {
-            locationResponseList = characterService.getCommonPlanet();
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        locationResponseList = characterService.getCommonPlanet();
+
         return new ResponseEntity<>(locationResponseList, HttpStatus.OK);
     }
 
     @GetMapping("/count/special/character")
     public ResponseEntity<Long> getCountSpecialCharacter() {
         Long countSpecialCharacter = null;
-        try {
-            countSpecialCharacter = characterService.getCountSpecialCharacter();
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        countSpecialCharacter = characterService.getCountSpecialCharacter();
+
         return new ResponseEntity<>(countSpecialCharacter, HttpStatus.OK);
     }
-
 }

@@ -1,19 +1,29 @@
 package com.pavell.rickAndMortyApi.backup;
 
+import com.github.ludoviccarretti.options.PropertiesOptions;
 import com.github.ludoviccarretti.services.PostgresqlExportService;
 import com.github.ludoviccarretti.services.PostgresqlImportService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.concurrent.ForkJoinPool;
-
-import static com.pavell.rickAndMortyApi.backup.Backup4jConfig.getProperties;
+import java.util.Properties;
 
 @Component
 public class BackupService {
+    @Value("${db.password}")
+    private String dbPassword;
+
+    @Value("${db.name}")
+    private String dbName;
+
+    @Value("${db.user}")
+    private String dbUser;
+
 
     public void doBackup() throws SQLException, IOException, ClassNotFoundException {
         PostgresqlExportService postgresqlExportService = new PostgresqlExportService(getProperties());
@@ -21,14 +31,15 @@ public class BackupService {
     }
 
     //TODO
-    public static boolean doRestore() throws SQLException, ClassNotFoundException, IOException {
-        String sql = new String(Files.readAllBytes(Paths.get(System.getProperty("user.home") + "/IdeaProjects/Synchroniser/9_2_2022_16_11_21_rick_and_morty_database_dump.sql")));
+    public boolean doRestore(String fileName) throws SQLException, ClassNotFoundException, IOException {
+//        "/IdeaProjects/Synchroniser/9_2_2022_16_11_21_rick_and_morty_database_dump.sql"
+        String sql = new String(Files.readAllBytes(Paths.get(System.getProperty("user.home") + fileName)));
 
         boolean res = PostgresqlImportService.builder()
-                .setDatabase("rick_and_morty")
+                .setDatabase(dbName)
                 .setSqlString(sql)
-                .setUsername("user")
-                .setPassword("password")
+                .setUsername(dbUser)
+                .setPassword(dbPassword)
                 .setDeleteExisting(true)
                 .setDropExisting(true)
                 .importDatabase();
@@ -36,4 +47,16 @@ public class BackupService {
         return res;
     }
 
+    private Properties getProperties() {
+        Properties properties = new Properties();
+        properties.setProperty(PropertiesOptions.DB_NAME, dbName);
+        properties.setProperty(PropertiesOptions.DB_USERNAME, dbUser);
+        properties.setProperty(PropertiesOptions.DB_PASSWORD, dbPassword);
+
+        properties.setProperty(PropertiesOptions.TEMP_DIR, new File(System.getProperty("user.home") + "/IdeaProjects/Synchroniser").getPath());
+
+        properties.setProperty(PropertiesOptions.PRESERVE_GENERATED_ZIP, "true");
+
+        return properties;
+    }
 }

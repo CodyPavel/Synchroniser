@@ -1,7 +1,7 @@
 package com.pavell.rickAndMortyApi.service.impl;
 
-import com.pavell.rickAndMortyApi.entity.RoleEntity;
-import com.pavell.rickAndMortyApi.repo.RoleJpaRepository;
+import com.pavell.rickAndMortyApi.entity.Role;
+import com.pavell.rickAndMortyApi.repo.RoleRepo;
 import com.pavell.rickAndMortyApi.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +12,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleJpaRepository roleJpaRepository;
+    private final RoleRepo roleJpaRepository;
 
     @Override
-    public RoleEntity save(RoleEntity roleEntity) {
+    public Role save(Role roleEntity) {
         log.info("Saving role {} to the database", roleEntity.getName());
         return roleJpaRepository.save(roleEntity);
     }

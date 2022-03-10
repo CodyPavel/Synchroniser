@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -21,7 +22,6 @@ import org.springframework.util.MultiValueMap;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.pavell.rickAndMortyApi.utils.Constants.SLASH;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -29,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 class EpisodeControllerTest {
+
+    @Value("${slash.delimiter}")
+    private String slash;
 
     private static final String URI_EPISODE_API = "/api/episode";
 
@@ -79,7 +82,7 @@ class EpisodeControllerTest {
     public void shouldGetEpisode() throws Exception {
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(URI_EPISODE_API + SLASH + "1");
+                .get(URI_EPISODE_API + slash + "1");
 
         EpisodeResponse episodeResponse = createEpisodeResponse();
         when(episodeService.getEpisodeById(eq(1L))).thenReturn(episodeResponse);
@@ -97,7 +100,7 @@ class EpisodeControllerTest {
     public void shouldGetEpisodes() throws Exception {
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(URI_EPISODE_API + SLASH + "multiple" + SLASH + "1,2");
+                .get(URI_EPISODE_API + slash + "multiple" + slash + "1,2");
         List<EpisodeResponse> resultsList = new ArrayList<EpisodeResponse>();
         EpisodeResponse episodeResponse = createEpisodeResponse();
         resultsList.add(episodeResponse);
@@ -120,7 +123,7 @@ class EpisodeControllerTest {
         params.add("episode", "episode");
 
         RequestBuilder requestBuilder = MockMvcRequestBuilders
-                .get(URI_EPISODE_API + SLASH)
+                .get(URI_EPISODE_API + slash)
                 .params(params);
 
         PageResponse pageResponse = new PageResponse();

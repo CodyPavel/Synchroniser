@@ -7,8 +7,8 @@ import com.pavell.rickAndMortyApi.dto.character.PageCharacter;
 import com.pavell.rickAndMortyApi.entity.Character;
 import com.pavell.rickAndMortyApi.entity.Episode;
 import com.pavell.rickAndMortyApi.entity.Location;
-import com.pavell.rickAndMortyApi.enums.CharacterStatus;
-import com.pavell.rickAndMortyApi.enums.Gender;
+import com.pavell.rickAndMortyApi.entity.enums.CharacterStatus;
+import com.pavell.rickAndMortyApi.entity.enums.Gender;
 import com.pavell.rickAndMortyApi.repo.CharacterRepo;
 import com.pavell.rickAndMortyApi.repo.EpisodeRepo;
 import com.pavell.rickAndMortyApi.repo.LocationRepo;
@@ -39,7 +39,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-import static com.pavell.rickAndMortyApi.utils.Constants.RESOURCE_CHARACTER_URL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
@@ -47,6 +46,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CharacterServiceTest {
+
+    public static final String RESOURCE_CHARACTER_URL = "https://rickandmortyapi.com/api/character";
 
     @InjectMocks
     private CharacterService characterService;

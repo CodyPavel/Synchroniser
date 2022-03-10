@@ -12,6 +12,7 @@ import com.pavell.rickAndMortyApi.response.common.PageResponse;
 import com.pavell.rickAndMortyApi.specification.SearchCriteriaEpisode;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,7 +24,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.pavell.rickAndMortyApi.specification.EpisodeSpecification.findByCriteria;
-import static com.pavell.rickAndMortyApi.utils.Constants.*;
 import static com.pavell.rickAndMortyApi.utils.InfoUtils.createInfoResponse;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.isSinglePage;
 import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToPrevAndNext;
@@ -31,6 +31,15 @@ import static com.pavell.rickAndMortyApi.utils.ParamsBuilder.setRequestParamsToP
 @Service
 @Slf4j
 public class EpisodeService {
+
+    public static final String EPISODE_URL = "http://localhost:8080/api/episode";
+    public static final String RESOURCE_EPISODE_URL = "https://rickandmortyapi.com/api/episode";
+
+    @Value("${page.size}")
+    private int pageSize;
+
+    @Value("${request.param.page.delimiter}")
+    private String delimiter;
 
 
     private ModelMapper modelMapper = new ModelMapper();
@@ -62,7 +71,7 @@ public class EpisodeService {
 
     public PageResponse getPage(Long page) {
         if (page == null) page = 1L;
-        Page<Episode> episodePage = episodeRepo.findAll(PageRequest.of(page.intValue() - 1, SIZE));
+        Page<Episode> episodePage = episodeRepo.findAll(PageRequest.of(page.intValue() - 1, pageSize));
         log.info(EpisodeService.class.getName() + " got episode page : " + page);
 
 
@@ -105,7 +114,7 @@ public class EpisodeService {
 
         Specification<Episode> specification = findByCriteria(new SearchCriteriaEpisode(episode, name));
 
-        Page<Episode> pageEntity = episodeRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), SIZE));
+        Page<Episode> pageEntity = episodeRepo.findAll(specification, PageRequest.of(page == null ? 0 : (int) (page - 1), pageSize));
         log.info(EpisodeService.class.getName() + " got episode by page: " + page +
                 " and search criteria params" +
                 " name=" + name +
@@ -206,14 +215,14 @@ public class EpisodeService {
         if (page == null || episodePage.getTotalPages() == page) {
             next = null;
         } else {
-            next = EPISODE_URL + REQUEST_PARAM_PAGE_DELIMITER + (page + 1);
+            next = EPISODE_URL + delimiter + (page + 1);
         }
         if (page == null || page == 2) {
             prev = EPISODE_URL;
         } else if (page == 1) {
             prev = null;
         } else {
-            prev = EPISODE_URL + REQUEST_PARAM_PAGE_DELIMITER + (page - 1);
+            prev = EPISODE_URL + delimiter + (page - 1);
         }
 
         info.setNext(next);

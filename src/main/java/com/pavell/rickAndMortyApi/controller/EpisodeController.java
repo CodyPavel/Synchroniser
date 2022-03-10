@@ -20,35 +20,26 @@ public class EpisodeController {
     private final EpisodeService episodeService;
 
     @GetMapping
-    public ResponseEntity<PageResponse> getPage(@RequestParam(required = false) Long page) {
+    public ResponseEntity<PageResponse> getPage(@RequestParam(required = false) Long page) throws Exception {
         PageResponse pageResponse = null;
-        try {
-            pageResponse = episodeService.getPage(page);
-         } catch (Exception e) {
-             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        pageResponse = episodeService.getPage(page);
+
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<EpisodeResponse> getEpisode(@PathVariable Long id) {
         EpisodeResponse episodeResponse = null;
-        try {
-            episodeResponse = episodeService.getEpisodeById(id);
-         } catch (Exception e) {
-             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        episodeResponse = episodeService.getEpisodeById(id);
+
         return new ResponseEntity<>(episodeResponse, HttpStatus.OK);
     }
 
     @GetMapping(value = {"/multiple/{ids}"})
     public ResponseEntity<List<EpisodeResponse>> getEpisodes(@PathVariable String[] ids) {
         List<EpisodeResponse> episodeResponseList = null;
-        try {
-            episodeResponseList = episodeService.getEpisodesByIds(ids);
-         } catch (Exception e) {
-             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        episodeResponseList = episodeService.getEpisodesByIds(ids);
+
         return new ResponseEntity<>(episodeResponseList, HttpStatus.OK);
     }
 
@@ -57,22 +48,16 @@ public class EpisodeController {
                                                         @RequestParam(required = false) String name,
                                                         @RequestParam(required = false) Long page) throws ParseException {
         PageResponse pageResponse = null;
-        try {
-            pageResponse = episodeService.getFilteredPage(episode, name, page);
-         } catch (Exception e) {
-             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        pageResponse = episodeService.getFilteredPage(episode, name, page);
+
         return new ResponseEntity<>(pageResponse, HttpStatus.OK);
     }
 
     @GetMapping("/common/characters")
     public ResponseEntity<List<CharacterResponse>> getCommonCharacters() {
         List<CharacterResponse> characterResponseList = null;
-        try {
-            characterResponseList = episodeService.getCommonCharacters();
-         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        characterResponseList = episodeService.getCommonCharacters();
+
         return new ResponseEntity<>(characterResponseList, HttpStatus.OK);
     }
 }

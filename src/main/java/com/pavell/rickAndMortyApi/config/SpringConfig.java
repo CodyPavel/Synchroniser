@@ -4,6 +4,8 @@ import com.pavell.rickAndMortyApi.backup.BackupService;
 import com.pavell.rickAndMortyApi.service.impl.CharacterService;
 import com.pavell.rickAndMortyApi.service.impl.EpisodeService;
 import com.pavell.rickAndMortyApi.service.impl.LocationService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -14,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.io.IOException;
 import java.sql.SQLException;
 
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Configuration
 @EnableScheduling
 public class SpringConfig {
@@ -22,16 +26,6 @@ public class SpringConfig {
     private EpisodeService episodeService;
     private CharacterService characterService;
     private BackupService backupService;
-
-    public SpringConfig(BackupService backupService,
-                        LocationService locationService,
-                        EpisodeService episodeService,
-                        CharacterService characterService) {
-        this.backupService = backupService;
-        this.locationService = locationService;
-        this.episodeService = episodeService;
-        this.characterService = characterService;
-    }
 
     @Bean
     PasswordEncoder passwordEncoder() {
