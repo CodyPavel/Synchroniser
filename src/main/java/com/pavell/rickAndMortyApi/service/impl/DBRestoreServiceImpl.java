@@ -2,9 +2,10 @@ package com.pavell.rickAndMortyApi.service.impl;
 
 import com.pavell.rickAndMortyApi.backup.BackupService;
 import com.pavell.rickAndMortyApi.service.DBRestoreService;
-import lombok.AllArgsConstructor;
+import com.pavell.rickAndMortyApi.service.ZipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.lingala.zip4j.exception.ZipException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,15 +16,14 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class DBRestoreServiceImpl implements DBRestoreService {
 
-    private BackupService backupService;
+    private final BackupService backupService;
+    private final ZipService zipService;
 
     @Override
-    public boolean doRestore() throws SQLException, IOException, ClassNotFoundException {
-//        "/IdeaProjects/Synchroniser/9_2_2022_16_11_21_rick_and_morty_database_dump.sql"
-        //TODO find newest file reZip and restore
-        String fileName  = "/IdeaProjects/Synchroniser/9_2_2022_16_11_21_rick_and_morty_database_dump.sql";
+    public boolean doRestore() throws SQLException, IOException, ClassNotFoundException, ZipException {
+        String latestZipDump = zipService.getLatestZipDump();
+        zipService.unZipFile(latestZipDump);
 
-        return backupService.doRestore(fileName);
+        return backupService.doRestore(latestZipDump.replace("zip", "sql"));
     }
-
 }
