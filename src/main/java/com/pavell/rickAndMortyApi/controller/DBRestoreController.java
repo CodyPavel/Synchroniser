@@ -2,6 +2,7 @@ package com.pavell.rickAndMortyApi.controller;
 
 import com.pavell.rickAndMortyApi.service.DBRestoreService;
 import lombok.RequiredArgsConstructor;
+import net.lingala.zip4j.exception.ZipException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class DBRestoreController {
     private final DBRestoreService dbRestoreService;
 
     @GetMapping
-    public ResponseEntity<Boolean> doRestore() throws SQLException, IOException, ClassNotFoundException {
+    public ResponseEntity<Boolean> doRestore() throws SQLException, IOException, ClassNotFoundException, ZipException {
         boolean dbRestoredSuccessful = dbRestoreService.doRestore();
 
         return new ResponseEntity<>(dbRestoredSuccessful, HttpStatus.OK);

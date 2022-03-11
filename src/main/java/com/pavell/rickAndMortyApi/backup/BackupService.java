@@ -32,8 +32,7 @@ public class BackupService {
 
     //TODO
     public boolean doRestore(String fileName) throws SQLException, ClassNotFoundException, IOException {
-//        "/IdeaProjects/Synchroniser/9_2_2022_16_11_21_rick_and_morty_database_dump.sql"
-        String sql = new String(Files.readAllBytes(Paths.get(System.getProperty("user.home") + fileName)));
+        String sql = new String(Files.readAllBytes(Paths.get(fileName)));
 
         boolean res = PostgresqlImportService.builder()
                 .setDatabase(dbName)
