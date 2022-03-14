@@ -11,3 +11,17 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: rick_and_morty
+  rabbitmq:
+   hostname: rabbitmq
+   container_name: rabbitmq
+   image: rabbitmq:3.6.0-management
+   ports:
+    - "5672:5672"
+    - "15672:15672"
+   volumes:
+      - /var/lib/rabbitmq
+   environment:
+    - HOSTNAME=rabbitmq
+    - RABBITMQ_NODENAME=rabbitmq
+    - RABBITMQ_DEFAULT_USER=user
+    - RABBITMQ_DEFAULT_PASS=password
