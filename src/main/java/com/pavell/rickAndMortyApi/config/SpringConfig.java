@@ -1,8 +1,10 @@
 package com.pavell.rickAndMortyApi.config;
 
 import com.pavell.rickAndMortyApi.backup.BackupService;
+import com.pavell.rickAndMortyApi.service.ZipService;
 import com.pavell.rickAndMortyApi.service.impl.CharacterService;
 import com.pavell.rickAndMortyApi.service.impl.EpisodeService;
+import com.pavell.rickAndMortyApi.service.impl.FileStore;
 import com.pavell.rickAndMortyApi.service.impl.LocationService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,7 @@ public class SpringConfig {
     private EpisodeService episodeService;
     private CharacterService characterService;
     private BackupService backupService;
+
 
     @Bean
     PasswordEncoder passwordEncoder() {

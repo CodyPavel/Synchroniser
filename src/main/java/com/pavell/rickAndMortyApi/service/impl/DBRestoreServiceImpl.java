@@ -21,7 +21,7 @@ public class DBRestoreServiceImpl implements DBRestoreService {
 
     @Override
     public boolean doRestore() throws SQLException, IOException, ClassNotFoundException, ZipException {
-        String latestZipDump = zipService.getLatestZipDump();
+        String latestZipDump = zipService.getLatestZipDumpFileName();
         zipService.unZipFile(latestZipDump);
 
         return backupService.doRestore(latestZipDump.replace("zip", "sql"));
