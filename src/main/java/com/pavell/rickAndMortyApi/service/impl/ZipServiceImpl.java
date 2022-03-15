@@ -1,23 +1,29 @@
 package com.pavell.rickAndMortyApi.service.impl;
 
+import com.pavell.rickAndMortyApi.config.amazon.BucketName;
 import com.pavell.rickAndMortyApi.service.ZipService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ZipServiceImpl implements ZipService {
 
     public static final String ZIP_DIRECTORY = System.getProperty("user.home") + "/IdeaProjects/Synchroniser/";
     public static final String ZIP_FILE_NAME = "rick_and_morty_database_dump.zip";
 
+    private final FileStore fileStore;
 
     @Override
     public void unZipFile(String zipFile) throws ZipException {
@@ -26,7 +32,7 @@ public class ZipServiceImpl implements ZipService {
     }
 
     @Override
-    public String getLatestZipDump() {
+    public String getLatestZipDumpFileName() {
         File folder = new File(ZIP_DIRECTORY);
         List<File> files = Arrays.stream(Objects.requireNonNull(folder.listFiles()))
                 .filter(file -> file.getName().contains(ZIP_FILE_NAME))
@@ -59,4 +65,22 @@ public class ZipServiceImpl implements ZipService {
 
         return nameOfZipFile;
     }
+
+    @Override
+    public void uploadLatestZipDumpToAmazon() {
+        File file = new File(getLatestZipDumpFileName());
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("Content-Type", "application/zip");
+        metadata.put("Content-Length", String.valueOf(file.length()));
+
+        String path = String.format("%s/%s", BucketName.RICK_AND_MORTY_FILES.getBucketName(), UUID.randomUUID());
+        String fileName = String.format("%s", file.getName());
+
+        try {
+            fileStore.upload(path, fileName, Optional.of(metadata), new FileInputStream(file));
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to upload file", e);
+        }
+    }
+
 }

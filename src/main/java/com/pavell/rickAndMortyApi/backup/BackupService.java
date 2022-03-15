@@ -3,17 +3,27 @@ package com.pavell.rickAndMortyApi.backup;
 import com.github.ludoviccarretti.options.PropertiesOptions;
 import com.github.ludoviccarretti.services.PostgresqlExportService;
 import com.github.ludoviccarretti.services.PostgresqlImportService;
+import com.pavell.rickAndMortyApi.config.amazon.BucketName;
+import com.pavell.rickAndMortyApi.service.ZipService;
+import com.pavell.rickAndMortyApi.service.impl.FileStore;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import net.lingala.zip4j.core.ZipFile;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.Properties;
+import java.util.*;
 
 @Component
+@RequiredArgsConstructor
 public class BackupService {
     @Value("${db.password}")
     private String dbPassword;
@@ -24,10 +34,13 @@ public class BackupService {
     @Value("${db.user}")
     private String dbUser;
 
+    private final ZipService zipService;
 
     public void doBackup() throws SQLException, IOException, ClassNotFoundException {
         PostgresqlExportService postgresqlExportService = new PostgresqlExportService(getProperties());
         postgresqlExportService.export();
+
+        zipService.uploadLatestZipDumpToAmazon();
     }
 
     //TODO

@@ -35,7 +35,6 @@ public class RickAndMortyApiApplication {
                              UserService userService,
                              RoleService roleService) {
 
-
         return args -> {
             roleService.save(new Role(null, "ROLE_USER"));
             roleService.save(new Role(null, "ROLE_ADMIN"));
@@ -53,7 +52,3 @@ public class RickAndMortyApiApplication {
         };
     }
 }
-
-
-
-
