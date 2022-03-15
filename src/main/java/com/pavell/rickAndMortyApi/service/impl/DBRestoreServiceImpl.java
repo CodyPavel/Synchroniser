@@ -18,12 +18,18 @@ public class DBRestoreServiceImpl implements DBRestoreService {
 
     private final BackupService backupService;
     private final ZipService zipService;
+    private final FileStore fileStore;
 
     @Override
     public boolean doRestore() throws SQLException, IOException, ClassNotFoundException, ZipException {
         String latestZipDump = zipService.getLatestZipDumpFileName();
         zipService.unZipFile(latestZipDump);
-
-        return backupService.doRestore(latestZipDump.replace("zip", "sql"));
+        try {
+            return backupService.doRestore(latestZipDump.replace("zip", "sql"));
+        } catch (Exception e) {
+            // TODO do restore from Amazon S3
+//            fileStore.download()
+        }
+        return false;
     }
 }
